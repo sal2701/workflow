@@ -7,7 +7,7 @@ class Workflow(models.Model):
     workflow_id = models.IntegerField(unique=True, null=False)
     workflow_name = models.CharField(null=False, max_length=100)
     num_of_task = models.IntegerField(null=False)
-    description = models.TextField(max_length=-1)
+    description = models.TextField(max_length=255)
     
     
 class Role(models.Model):
