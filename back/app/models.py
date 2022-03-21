@@ -4,7 +4,7 @@ from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
 class Workflow(models.Model):	
-    workflow_id = models.IntegerField(unique=True, null=False)
+    # workflow_id = models.IntegerField(unique=True, null=False)
     workflow_name = models.CharField(null=False, max_length=100)
     num_of_task = models.IntegerField(null=False)
     description = models.TextField(max_length=255)
@@ -30,9 +30,9 @@ class Task(models.Model):
     task_id = models.IntegerField(unique=True, null=False)
     workflow_id = models.ForeignKey(Workflow,on_delete=models.CASCADE, related_name = "task_workflow")
     task_name = models.CharField(null=False, max_length=100)
-    description = models.TextField(max_length=-1)
-    successor = ArrayField(models.IntegerField(),size=-1)
-    predecessor = ArrayField(models.IntegerField(),size=-1)
+    description = models.TextField(max_length=255)
+    successor = models.IntegerField()
+    predecessor = models.IntegerField()
     action = models.CharField(max_length=2,choices=HOWS)
     # role_id = ArrayField(models.ForeignKey(Role, related_name = "task_role", on_delete=models.CASCADE))
 

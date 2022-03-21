@@ -10,6 +10,7 @@ const Admin = () => {
 		<Container>
 			<Heading mb={5}>Admin Page</Heading>
 			<Stack>
+		<Button>Add User</Button>
         <Button>Delete User</Button>
         <Button>Delete Workflow</Button>
         <Button>Add Workflow</Button>
