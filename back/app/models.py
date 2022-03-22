@@ -27,7 +27,7 @@ class Task(models.Model):
         (APPROVE,"Approve/Reject")
     ]
     	
-    task_id = models.IntegerField(unique=True, null=False)
+    task_id = models.IntegerField(null=False)
     workflow_id = models.ForeignKey(Workflow,on_delete=models.CASCADE, related_name = "task_workflow")
     task_name = models.CharField(null=False, max_length=100)
     description = models.TextField(max_length=255)

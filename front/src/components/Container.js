@@ -9,7 +9,7 @@ import Navbar from './Navbar';
 const Container = ({ children }) => {
     const { colorMode } = useColorMode();
 
-    document.title="Conquer"
+    document.title="Workflow"
     return (
         <>
             <Navbar />

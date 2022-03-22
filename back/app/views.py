@@ -33,6 +33,16 @@ class ListWorkflow(APIView):
         data = serializers.serialize('json', [obj])
         return Response(data)
 
+class UpdateWorkflow(APIView):
+    
+    def post(self,request):
+        data = request.data
+        obj = Workflow.objects.get(pk=data["id"])
+        obj.num_of_task = data["num_tasks"]    
+        obj.save()        
+        data = serializers.serialize('json', [obj])
+        return Response(data)
+
 class ListTask(APIView):
     
     def get(self, request):
@@ -42,8 +52,10 @@ class ListTask(APIView):
     
     def post(self,request):
         data = request.data
-        obj = Task(task_id=data["id"], workflow_id=data["wf_id"],task_name=data["name"], num_of_task=data["num_tasks"], description=data["description"])
+        wf_instance = Workflow.objects.get(pk=data["wf_id"])
+        obj = Task(task_id=data["id"], workflow_id=wf_instance,task_name=data["name"], predecessor = data["predecessors"],successor = data["successors"], description=data["description"], action = data["action"])
         obj.save()
+        data = serializers.serialize('json', [obj])
         return Response(data)
                 
 
