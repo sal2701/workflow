@@ -70,7 +70,7 @@ const Workflow = () => {
 		// console.log(description)
 		console.log("sending request")
 
-		axios.post('http://localhost:8080/workflow/', {
+		axios.post('http://localhost:8000/workflow/', {
 			name: name,
 			num_tasks: 0,
 			description: description
@@ -94,7 +94,7 @@ const Workflow = () => {
 		// console.log(description)
 		console.log("sending request")
 
-		axios.post('http://localhost:8080/workflow/update/', {
+		axios.post('http://localhost:8000/workflow/update/', {
 			id: workflow,
 			num_tasks: count,
 		  })

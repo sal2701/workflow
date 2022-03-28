@@ -8,6 +8,8 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Task from "./pages/Task";
 import Workflow from "./pages/Workflow";
+import Register from "./pages/Register";
+
 
 export default function SiteRoutes() {
   return (
@@ -24,6 +26,10 @@ export default function SiteRoutes() {
           <Route exact path="/admin" element={<Admin />}></Route>
 
           <Route exact path="/login" element={<Login />}></Route>
+
+          <Route exact path="/register" element={<Register />}></Route>
+
+          
 
         </Routes>
       </React.Fragment>

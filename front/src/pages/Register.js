@@ -4,8 +4,10 @@ import Container from "../components/Container";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const Login = () => {
-	const [username, setUsername] = useState("")
+
+const Register = () => {
+
+    const [username, setUsername] = useState("")
 	const [password, setPassword] = useState("")
 
     const createUser = () => {
@@ -13,7 +15,7 @@ const Login = () => {
 		// console.log(description)
 		console.log("sending request")
 
-		axios.post('http://localhost:8000/api/auth/login/', {
+		axios.post('http://localhost:8000/api/auth/register/', {
 			email: username,
             password: password
 		  })
@@ -28,18 +30,19 @@ const Login = () => {
 		});
 
 	}
+
 	return (
 		<>
 		<Container>
-			<Heading mb={5}>SignIn</Heading>
+			<Heading mb={5}>SignUp</Heading>
 			<Stack>
         <Input variant='outline' placeholder='Username / Email' onChange={(e) => setUsername(e.target.value)}/>
         <Input variant='outline' placeholder='Password' onChange={(e) => setPassword(e.target.value)}/>
-        <Button colorScheme="green">Login</Button>
+        <Button colorScheme="green" onClick={createUser}>Register</Button>
 			</Stack>
 		</Container>
 		</>
 	)
 }
 
-export default Login;
+export default Register;

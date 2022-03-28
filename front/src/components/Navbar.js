@@ -43,7 +43,12 @@ const LINKS = [
       href: '/login',
       key: 5,
       text: 'login'
-  }
+  },
+  {
+    href: '/register',
+    key: 6,
+    text: 'register'
+}
 ];
 
 

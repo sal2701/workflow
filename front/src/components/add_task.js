@@ -35,7 +35,7 @@ function BasicUsage(workflow_id, created, count, setCount) {
         console.log("sending request")
         count+=1
         setCount(count)
-		axios.post('http://localhost:8080/task/', {
+		axios.post('http://localhost:8000/task/', {
 			name: name,
 			wf_id: workflow_id,
 			description: description,
@@ -53,6 +53,8 @@ function BasicUsage(workflow_id, created, count, setCount) {
 		  .catch(function (error) {
 			console.log(error);
 		});
+		onClose();
+
     }
 
     return (
