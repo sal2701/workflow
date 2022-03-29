@@ -2,6 +2,7 @@
 import { Flex } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
@@ -12,6 +13,7 @@ import Register from "./pages/Register";
 
 
 export default function SiteRoutes() {
+
   return (
     <Router>
       <React.Fragment>
@@ -29,7 +31,7 @@ export default function SiteRoutes() {
 
           <Route exact path="/register" element={<Register />}></Route>
 
-          
+
 
         </Routes>
       </React.Fragment>

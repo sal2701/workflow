@@ -18,21 +18,21 @@ import axios from "axios";
 
 
 
-function BasicUsage(created, workflow_data, role_data) {
+function BasicUsage(created, workflow_data, role_data, task_data) {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const [roles, setRole] = useState([])
     const [workflow_id, setWorkflowId] = useState("1")
     // const [workflow_data, setWorkflowData] = useState([])
-    const [user_data, setUserData] = useState([])
+    // const [task_data, setTaskData] = useState([])
     // const [role_data, setRoleData] = useState([])
-    const [user, setUser] = useState("")
+    const [task, setTask] = useState("")
 
     const handleWorkflowChange = (event) => {
         setWorkflowId(event.target.value)
     }
-    const handleUserChange = (event) => {
-        setUser(event.target.value)
+    const handleTaskChange = (event) => {
+        setTask(event.target.value)
     }
     const handleRoleChange = (event) => {
         const roles = [];
@@ -49,10 +49,10 @@ function BasicUsage(created, workflow_data, role_data) {
         }
     }
     );
-    const UserOption = (data) =>
-        <ChakraSelect placeholder='Select option' onChange={handleUserChange}>{
+    const TaskOption = (data) =>
+        <ChakraSelect placeholder='Select option' onChange={handleTaskChange}>{
             data.map((x) =>
-                <option value={x["pk"]}>{x["fields"]["username"]}</option>)
+                <option value={x["pk"]}>{x["fields"]["task_name"]}</option>)
         }</ChakraSelect>;
 
     const WorkflowOption = (data) =>
@@ -62,13 +62,13 @@ function BasicUsage(created, workflow_data, role_data) {
         }</ChakraSelect>;
 
 
-    const create_user_role = () => {
+    const create_task_role = () => {
         console.log("sending request");
 
 
-        // axios.post('http://localhost:8000/user-role/create/', {
+        // axios.post('http://localhost:8000/task-role/create/', {
         //     role: roles,
-        //     user: user,
+        //     task: task,
         //     wf_id: workflow_id
         // })
         //     .then(function (response) {
@@ -85,18 +85,18 @@ function BasicUsage(created, workflow_data, role_data) {
 
     return (
         <>
-            <Button onClick={onOpen} hidden={created}>Add User Role</Button>
+            <Button onClick={onOpen} hidden={created}>Add Task Role</Button>
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>Add User Role</ModalHeader>
+                    <ModalHeader>Add Task Role</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
                         <Stack pb={3}>
                             {WorkflowOption(workflow_data)}
-                            {UserOption(user_data)}
+                            {TaskOption(task_data)}
                             <Select placeholder='Select option' options={roleOptions} onChange={handleRoleChange} isMulti={true} />
-                            <Button colorScheme="teal" onClick={create_user_role}>Create Role</Button>
+                            <Button colorScheme="teal" onClick={create_task_role}>Create Role</Button>
                         </Stack>
                     </ModalBody>
                 </ModalContent>
@@ -105,7 +105,7 @@ function BasicUsage(created, workflow_data, role_data) {
     )
 }
 
-const AddUserRole = (props) => {
+const AddTaskRole = (props) => {
 
     const axios = require('axios')
 
@@ -113,9 +113,9 @@ const AddUserRole = (props) => {
 
     return (
         <>
-            {BasicUsage(props.created, props.workflow_data, props.role_data)}
+            {BasicUsage(props.created, props.workflow_data, props.role_data, props.task_data)}
         </>
     )
 }
 
-export default AddUserRole;
+export default AddTaskRole;

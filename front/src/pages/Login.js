@@ -8,36 +8,36 @@ const Login = () => {
 	const [username, setUsername] = useState("")
 	const [password, setPassword] = useState("")
 
-    const createUser = () => {
+	const loginUser = () => {
 		// console.log(name)
 		// console.log(description)
 		console.log("sending request")
 
 		axios.post('http://localhost:8000/api/auth/login/', {
-			email: username,
-            password: password
-		  })
-		  .then(function (response) {
-			const data = JSON.parse(response.data)
-			console.log(data);
+			username: username,
+			password: password
+		})
+			.then(function (response) {
+				const data = JSON.parse(response.data)
+				console.log(data);
 
-			
-		  })
-		  .catch(function (error) {
-			console.log(error);
-		});
+
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
 
 	}
 	return (
 		<>
-		<Container>
-			<Heading mb={5}>SignIn</Heading>
-			<Stack>
-        <Input variant='outline' placeholder='Username / Email' onChange={(e) => setUsername(e.target.value)}/>
-        <Input variant='outline' placeholder='Password' onChange={(e) => setPassword(e.target.value)}/>
-        <Button colorScheme="green">Login</Button>
-			</Stack>
-		</Container>
+			<Container>
+				<Heading mb={5}>SignIn</Heading>
+				<Stack>
+					<Input variant='outline' placeholder='Username / Email' onChange={(e) => setUsername(e.target.value)} />
+					<Input variant='outline' placeholder='Password' onChange={(e) => setPassword(e.target.value)} />
+					<Button colorScheme="green" onClick={loginUser}>Login</Button>
+				</Stack>
+			</Container>
 		</>
 	)
 }
