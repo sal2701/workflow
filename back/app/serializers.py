@@ -3,14 +3,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import update_last_login
 from rest_framework_simplejwt.settings import api_settings
-
-
-
 from .models import Workflow, UserManager, User
-
-
-
-
 
 class WorkflowSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

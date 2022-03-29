@@ -66,20 +66,20 @@ function BasicUsage(created, workflow_data, role_data, task_data) {
         console.log("sending request");
 
 
-        // axios.post('http://localhost:8000/task-role/create/', {
-        //     role: roles,
-        //     task: task,
-        //     wf_id: workflow_id
-        // })
-        //     .then(function (response) {
-        //         const data = JSON.parse(response.data)
-        //         console.log(data);
-        //     })
-        //     .catch(function (error) {
-        //         console.log(error);
-        //     });
+        axios.post('http://localhost:8000/task-role/create/', {
+            role: roles,
+            task: task,
+            wf_id: workflow_id
+        })
+            .then(function (response) {
+                const data = JSON.parse(response.data)
+                console.log(data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
 
-        // onClose();
+        onClose();
 
     }
 

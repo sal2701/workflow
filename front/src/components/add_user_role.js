@@ -18,13 +18,13 @@ import axios from "axios";
 
 
 
-function BasicUsage(created, workflow_data, role_data) {
+function BasicUsage(created, workflow_data, role_data, user_data) {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const [roles, setRole] = useState([])
     const [workflow_id, setWorkflowId] = useState("1")
     // const [workflow_data, setWorkflowData] = useState([])
-    const [user_data, setUserData] = useState([])
+    // const [user_data, setUserData] = useState([])
     // const [role_data, setRoleData] = useState([])
     const [user, setUser] = useState("")
 
@@ -52,7 +52,7 @@ function BasicUsage(created, workflow_data, role_data) {
     const UserOption = (data) =>
         <ChakraSelect placeholder='Select option' onChange={handleUserChange}>{
             data.map((x) =>
-                <option value={x["pk"]}>{x["fields"]["username"]}</option>)
+                <option value={x["pk"]}>{x["fields"]["email"]}</option>)
         }</ChakraSelect>;
 
     const WorkflowOption = (data) =>
@@ -66,20 +66,20 @@ function BasicUsage(created, workflow_data, role_data) {
         console.log("sending request");
 
 
-        // axios.post('http://localhost:8000/user-role/create/', {
-        //     role: roles,
-        //     user: user,
-        //     wf_id: workflow_id
-        // })
-        //     .then(function (response) {
-        //         const data = JSON.parse(response.data)
-        //         console.log(data);
-        //     })
-        //     .catch(function (error) {
-        //         console.log(error);
-        //     });
+        axios.post('http://localhost:8000/user-role/create/', {
+            role: roles,
+            user: user,
+            wf_id: workflow_id
+        })
+            .then(function (response) {
+                const data = JSON.parse(response.data)
+                console.log(data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
 
-        // onClose();
+        onClose();
 
     }
 
@@ -113,7 +113,7 @@ const AddUserRole = (props) => {
 
     return (
         <>
-            {BasicUsage(props.created, props.workflow_data, props.role_data)}
+            {BasicUsage(props.created, props.workflow_data, props.role_data, props.user_data)}
         </>
     )
 }
