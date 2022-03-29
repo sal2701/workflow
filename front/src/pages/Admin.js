@@ -14,6 +14,8 @@ const Admin = () => {
 
 	const [created, setCreated] = useState(false)
 	const [workflow_data, setWorkflowData] = useState([])
+	const [role_data, setRoleData] = useState([])
+
 
 	useEffect(() => {
 
@@ -23,6 +25,16 @@ const Admin = () => {
 				const data = JSON.parse(response.data)
 				setWorkflowData(data);
 				console.log(workflow_data);
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+		axios.get('http://localhost:8000/role/create/', {
+		})
+			.then(function (response) {
+				const data = JSON.parse(response.data)
+				setRoleData(data);
+				console.log(role_data);
 			})
 			.catch(function (error) {
 				console.log(error);
@@ -43,7 +55,7 @@ const Admin = () => {
 				<Heading mb={5}>Admin Page</Heading>
 				<Stack>
 					<AddRole created={created} workflow_data={workflow_data} />
-					<AddUserRole created={created} workflow_data={workflow_data} />
+					<AddUserRole created={created} workflow_data={workflow_data} role_data={role_data} />
 					<Button>Edit User</Button>
 					<Button>Delete Workflow</Button>
 					<Button onClick={routeChange}>Add Workflow</Button>

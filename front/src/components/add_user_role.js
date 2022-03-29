@@ -1,5 +1,5 @@
 // import { Flex, Heading, Text } from "@chakra-ui/layout";
-import { Stack, Spacer, Heading, Text, Input, Button, Select, HStack, Checkbox } from "@chakra-ui/react";
+import { Stack, Spacer, Heading, Text, Input, Select as ChakraSelect, Button, HStack, Checkbox } from "@chakra-ui/react";
 import Container from "../components/Container";
 // import { useEffect, useState } from "react";
 import {
@@ -12,20 +12,20 @@ import {
     ModalCloseButton,
 } from '@chakra-ui/react'
 import { useDisclosure } from '@chakra-ui/react'
-// import Select from 'react-select'
+import Select from 'react-select'
 import { useState, useEffect } from "react";
 import axios from "axios";
 
 
 
-function BasicUsage(created, workflow_data) {
+function BasicUsage(created, workflow_data, role_data) {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const [role, setRole] = useState("")
     const [workflow_id, setWorkflowId] = useState("1")
     // const [workflow_data, setWorkflowData] = useState([])
     const [user_data, setUserData] = useState([])
-    const [role_data, setRoleData] = useState([])
+    // const [role_data, setRoleData] = useState([])
     const [user, setUser] = useState("")
 
     const handleWorkflowChange = (event) => {
@@ -38,24 +38,28 @@ function BasicUsage(created, workflow_data) {
         setRole(event.target.value)
     }
 
+    const userOptions = user_data.map((x) => {
+        return {
+            value: x["pk"],
+            label: x["fields"]["username"]
+        }
+    }
+    );
+
+    const roleOptions = role_data.map((x) => {
+        return {
+            value: x["pk"],
+            label: x["fields"]["role"]
+        }
+    }
+    );
 
     const WorkflowOption = (data) =>
-        <Select placeholder='Select option' onChange={handleWorkflowChange}>{
+        <ChakraSelect placeholder='Select option' onChange={handleWorkflowChange}>{
             data.map((x) =>
                 <option value={x["pk"]}>{x["fields"]["workflow_name"]}</option>)
-        }</Select>;
+        }</ChakraSelect>;
 
-    const UserOption = (data) =>
-        <Select placeholder='Select option' onChange={handleUserChange}>{
-            data.map((x) =>
-                <option value={x["pk"]}>{x["fields"]["role"]}</option>)
-        }</Select>;
-
-    const RoleOption = (data) =>
-        <Select placeholder='Select option' onChange={handleRoleChange}>{
-            data.map((x) =>
-                <option value={x["pk"]}>{x["fields"]["username"]}</option>)
-        }</Select>;
 
     const create_user_role = () => {
         console.log("sending request")
@@ -89,8 +93,8 @@ function BasicUsage(created, workflow_data) {
                     <ModalBody>
                         <Stack pb={3}>
                             {WorkflowOption(workflow_data)}
-                            {UserOption(user_data)}
-                            {RoleOption(role_data)}
+                            <Select placeholder='Select option' options={userOptions} onChange={handleUserChange} />
+                            <Select placeholder='Select option' options={roleOptions} onChange={handleRoleChange} />
                             <Button colorScheme="teal" onClick={create_user_role}>Create Role</Button>
                         </Stack>
                     </ModalBody>
@@ -108,7 +112,7 @@ const AddUserRole = (props) => {
 
     return (
         <>
-            {BasicUsage(props.created, props.workflow_data)}
+            {BasicUsage(props.created, props.workflow_data, props.role_data)}
         </>
     )
 }
