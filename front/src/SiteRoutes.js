@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Task from "./pages/Task";
 import Workflow from "./pages/Workflow";
 import Register from "./pages/Register";
+import Task_Graph from "./components/Task_Graph";
 
 
 export default function SiteRoutes() {
@@ -31,7 +32,7 @@ export default function SiteRoutes() {
 
           <Route exact path="/register" element={<Register />}></Route>
 
-
+          <Route exact path="/task_graph" element={<Task_Graph />}></Route>
 
         </Routes>
       </React.Fragment>

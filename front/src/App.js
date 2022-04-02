@@ -65,13 +65,13 @@ import SiteRoutes from './SiteRoutes';
 // 	)
 // }
 const App = () => {
-	return (
-		<ChakraProvider resetCSS >
-			{/* <GlobalStyle>  */}
-        <SiteRoutes />
-			{/* </GlobalStyle>			 */}
-		</ChakraProvider>
-	)
+  return (
+    <ChakraProvider resetCSS >
+      {/* <GlobalStyle>  */}
+      <SiteRoutes />
+      {/* </GlobalStyle>			 */}
+    </ChakraProvider>
+  )
 }
 
 export default App
