@@ -116,15 +116,34 @@ const Workflow = () => {
 		})
 			.then(function (response) {
 				const data = JSON.parse(response.data)
-				setTaskData(data);
 				console.log(data);
+
+				const payload = data.map( (d) => {
+					return {
+						id: d['pk'].toString(),
+						type: 'default',
+						data: {
+							label: d["fields"]["task_name"]
+						},
+						position: {
+							x: 250,
+							y: 5
+						},
+						className: 'light'
+					}
+				})
+				console.log("payload")
+				console.log(payload)
+
+				setTaskData(payload);
+
+				console.log(count);
+				setRedirect(true)
+				setCreated(true)
 			})
 			.catch(function (error) {
 				console.log(error);
 			});
-		console.log(count);
-		setRedirect(true)
-		setCreated(true)
 	}
 
 	return (

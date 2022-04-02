@@ -23,62 +23,77 @@ const onInit = (reactFlowInstance) => console.log('flow loaded:', reactFlowInsta
 const initialNodes = [
     {
         id: '1',
-        type: 'input',
+        type: 'default',
         data: { label: 'Node 0' },
         position: { x: 250, y: 5 },
         className: 'light',
     },
     {
-        id: '2',
-        data: { label: 'Group A' },
+        'id': '2',
+        'type': 'default',
+        'data': { label: 'Group 0' },
         position: { x: 250, y: 5 },
         className: 'light',
-        style: { backgroundColor: 'rgba(255, 0, 0, 0.2)', width: 200, height: 200 },
     },
+    // {
+    //     id: '3',
+    //     input: 'default',
+    //     data: { label: 'Group A' },
+    //     position: { x: 250, y: 5 },
+    //     className: 'light',
+    //     style: { backgroundColor: 'rgba(255, 0, 0, 0.2)', width: 200, height: 200 },
+    // },
     {
-        id: '2a',
-        data: { label: 'Node A.1' },
+        id: '3',
+        type: "default",
+        data: { label: "Loan" },
         position: { x: 250, y: 5 },
-        parentNode: '2',
+        className: "light"
     },
-    { id: '3', data: { label: 'Node 1' }, position: { x: 320, y: 100 }, className: 'light' },
-    {
-        id: '4',
-        data: { label: 'Group B' },
-        position: { x: 250, y: 5 },
-        className: 'light',
-        style: { backgroundColor: 'rgba(255, 0, 0, 0.2)', width: 300, height: 300 },
-    },
-    {
-        id: '4a',
-        data: { label: 'Node B.1' },
-        position: { x: 250, y: 5 },
-        className: 'light',
-        parentNode: '4',
-        extent: 'parent',
-    },
-    {
-        id: '4b',
-        data: { label: 'Group B.A' },
-        position: { x: 250, y: 5 },
-        className: 'light',
-        style: { backgroundColor: 'rgba(255, 0, 255, 0.2)', height: 150, width: 270 },
-        parentNode: '4',
-    },
-    {
-        id: '4b1',
-        data: { label: 'Node B.A.1' },
-        position: { x: 250, y: 5 },
-        className: 'light',
-        parentNode: '4b',
-    },
-    {
-        id: '4b2',
-        data: { label: 'Node B.A.2' },
-        position: { x: 250, y: 5 },
-        className: 'light',
-        parentNode: '4b',
-    },
+    // {
+    //     id: '2a',
+    //     data: { label: 'Node A.1' },
+    //     position: { x: 250, y: 5 },
+    //     parentNode: '2',
+    // },
+    // { id: '3', data: { label: 'Node 1' }, position: { x: 320, y: 100 }, className: 'light' },
+    // {
+    //     id: '4',
+    //     data: { label: 'Group B' },
+    //     position: { x: 250, y: 5 },
+    //     className: 'light',
+    //     style: { backgroundColor: 'rgba(255, 0, 0, 0.2)', width: 300, height: 300 },
+    // },
+    // {
+    //     id: '4a',
+    //     data: { label: 'Node B.1' },
+    //     position: { x: 250, y: 5 },
+    //     className: 'light',
+    //     parentNode: '4',
+    //     extent: 'parent',
+    // },
+    // {
+    //     id: '4b',
+    //     data: { label: 'Group B.A' },
+    //     position: { x: 250, y: 5 },
+    //     className: 'light',
+    //     style: { backgroundColor: 'rgba(255, 0, 255, 0.2)', height: 150, width: 270 },
+    //     parentNode: '4',
+    // },
+    // {
+    //     id: '4b1',
+    //     data: { label: 'Node B.A.1' },
+    //     position: { x: 250, y: 5 },
+    //     className: 'light',
+    //     parentNode: '4b',
+    // },
+    // {
+    //     id: '4b2',
+    //     data: { label: 'Node B.A.2' },
+    //     position: { x: 250, y: 5 },
+    //     className: 'light',
+    //     parentNode: '4b',
+    // },
 ];
 
 const initialEdges = [
@@ -90,6 +105,15 @@ const Task_Graph = () => {
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const onConnect = (params) => setEdges((eds) => addEdge(params, eds));
     const onEdgeUpdate = (oldEdge, newConnection) => setEdges((els) => updateEdge(oldEdge, newConnection, els));
+
+    useEffect(() => {
+        console.log('effect')
+        console.log(location.state.task_data)
+        console.log(location.state)
+        console.log(edges)
+        setNodes(location.state.task_data)
+    }, [])
+    
 
     return (
         <Container h="1000px">

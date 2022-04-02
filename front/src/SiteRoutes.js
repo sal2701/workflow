@@ -19,6 +19,8 @@ export default function SiteRoutes() {
     <Router>
       <React.Fragment>
         <Routes>
+          
+          <Route exact path="/" element={<Workflow />}></Route>
 
           <Route exact path="/workflow" element={<Workflow />}></Route>
 
