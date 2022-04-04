@@ -16,6 +16,7 @@ import { useDisclosure } from '@chakra-ui/react'
 import { useState } from "react";
 import axios from "axios";
 import AddTask from "../components/add_task";
+import { useSelector } from "react-redux";
 
 
 function BasicUsage() {
@@ -67,6 +68,10 @@ const Workflow = () => {
 	const [task_data, setTaskData] = useState([])
 	const [redirect, setRedirect] = useState(false)
 	const axios = require('axios')
+
+	const auth = useSelector((state) => state.auth)
+	console.log('auth')
+	console.log(auth)
 
 	const initialize_workflow = () => {
 		// console.log(name)
