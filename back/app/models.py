@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django import forms
+from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
@@ -79,10 +80,11 @@ class UserManager(BaseUserManager):
         user.staff = True
         user.admin = True
         user.has_perm = True
+        user.is_superuser=True
         user.save(using=self._db)
         return user
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         null=False,
         verbose_name='email address',
@@ -105,6 +107,13 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return self.email
+
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+
+    def has_module_perms(self, app_label):
+        print(self.is_superuser)
+        return self.is_superuser
     
     @property
     def is_staff(self):
