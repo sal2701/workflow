@@ -32,8 +32,8 @@ class Task(models.Model):
     workflow_id = models.ForeignKey(Workflow,on_delete=models.CASCADE, related_name = "task_workflow")
     task_name = models.CharField(null=False, max_length=100)
     description = models.TextField(max_length=255)
-    successor = models.IntegerField()
-    predecessor = models.IntegerField()
+    successor = models.TextField(max_length=1000)
+    predecessor = models.TextField(max_length=1000)
     action = models.CharField(max_length=2,choices=HOWS)
 
 class Task_Role(models.Model):

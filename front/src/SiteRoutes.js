@@ -13,12 +13,17 @@ import Register from "./pages/Register";
 import Task_Graph from "./components/Task_Graph";
 import { useSelector } from "react-redux";
 import Unauthorised from "./components/Unauthorised";
+import Unauthorised2 from "./components/Unauthorised2";
 import Homepage from "./components/Homepage";
 
 export default function SiteRoutes() {
 
   const RequireAuth = ( { children, redirectTo, adminOnly } ) => {
     const auth = useSelector((state) => state.auth);
+
+    if (auth.account == undefined) {
+      return <Unauthorised2 />
+    }
 
     if( adminOnly) {
       return auth.account.is_superuser ? children : <Unauthorised />

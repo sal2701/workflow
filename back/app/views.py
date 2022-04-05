@@ -217,6 +217,13 @@ class ListWorkflowinstance(APIView):
         obj.save()
         data = serializers.serialize('json', [obj])
         return Response(data)
+
+class AddGraph(APIView):
+
+    def get(self, request):
+        data = request.data
+        tasks_data = Task.objects.filter(workflow_id = data["pk"])
+        
     
 class ListWorkflowInstanceCurrentTask(APIView):
     
