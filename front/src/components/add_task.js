@@ -75,12 +75,6 @@ function BasicUsage(workflow_id, created, count, setCount) {
 						<option value='UP'>Upload</option>
 						<option value='AR'>Approve/Reject</option>
 					</Select>
-					<HStack>
-						<Input variant='outline' placeholder='Prerequisites' value={predecessors} onChange={(e) => setPredecessors(e.target.value)}/>
-						<Checkbox defaultChecked>All</Checkbox>
-					</HStack>
-                    <Input variant='outline' placeholder="Successors" value={successors} onChange={(e) => setSuccessors(e.target.value)}/>
-					<Input variant='outline' placeholder='Role List' value={role} onChange={(e) => setRole(e.target.value)}/>
 					<Button colorScheme="teal" onClick={create_task}>Create Task</Button>
 				</Stack>
 			</ModalBody>

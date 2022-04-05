@@ -18,6 +18,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.core import serializers
 from .serializers import UserSerializer, LoginSerializer, RegisterSerializer
+import json
 # Create your views here.
 
 manager = UserManager()
@@ -33,7 +34,6 @@ class ListWorkflow(APIView):
         data = request.data
         obj = Workflow(workflow_name=data["name"], num_of_task=data["num_tasks"], description=data["description"])
         obj.save()
-        print(obj.workflow_name)
         data = serializers.serialize('json', [obj])
         return Response(data)
 
@@ -218,12 +218,73 @@ class ListWorkflowinstance(APIView):
         data = serializers.serialize('json', [obj])
         return Response(data)
 
-class AddGraph(APIView):
+class GetTasks(APIView):
 
-    def get(self, request):
+    def post(self, request):
         data = request.data
         tasks_data = Task.objects.filter(workflow_id = data["pk"])
+        data = serializers.serialize('json', tasks_data)
+        return Response(data)   
         
+class AddGraph(APIView):
+    
+    valid = 1
+    
+    def dfs(self,adj_list, curr_task, visited):
+        if visited[curr_task] == 1:
+            self.valid  = 0
+        else:
+            visited[curr_task] = 1;
+            if not curr_task in adj_list:
+                return
+            for node in adj_list[curr_task]:
+                self.dfs(adj_list, node, visited)
+                if self.valid == 0:
+                    return
+    
+    def post(self, request):
+        data = request.data
+        suc_list = dict()
+        pred_list = dict()
+        visited = dict()
+        for edge in data['edges']:
+            if not edge['source'] in suc_list:
+                suc_list[edge['source']] = []
+            if not edge['target'] in pred_list:
+                pred_list[edge['target']] = []
+            if not edge['target'] in suc_list:
+                suc_list[edge['target']] = []
+            if not edge['source'] in pred_list:
+                pred_list[edge['source']] = []
+            
+            if not edge['source'] in visited:
+                visited[edge['source']] = 0
+            
+            suc_list[edge['source']].append(edge['target'])
+            
+            if not edge['target'] in visited:
+                visited[edge['target']] = 0
+            
+            pred_list[edge['target']].append(edge['source'])
+        for i in pred_list:
+            if len(pred_list[i])==0:
+                self.dfs(suc_list, i, visited)
+
+        if(self.valid == 0):
+            return Response("Invalid")
+
+        for key in suc_list:
+            obj = Task.objects.get(pk=key)
+            json_str = json.dumps(suc_list[key])
+            obj.successor = json_str 
+            obj.save()
+        for key in pred_list:
+            obj = Task.objects.get(pk=key)
+            json_str = json.dumps(pred_list[key])
+            obj.predecessor = json_str
+            obj.save()    
+        return Response(data)   
+
     
 class ListWorkflowInstanceCurrentTask(APIView):
     

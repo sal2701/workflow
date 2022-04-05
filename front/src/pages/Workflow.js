@@ -117,8 +117,9 @@ const Workflow = () => {
 				console.log(error);
 			});
 
-		axios.get('http://localhost:8000/task/', {
-		})
+		axios.post('http://localhost:8000/task/gettasks/', {
+			pk:workflow
+		  })
 			.then(function (response) {
 				const data = JSON.parse(response.data)
 				console.log(data);

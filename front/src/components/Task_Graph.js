@@ -1,4 +1,6 @@
-import { Container } from '@chakra-ui/react';
+import { Container, Button } from '@chakra-ui/react';
+import { Navigate } from "react-router-dom";
+
 import React, { useEffect } from 'react';
 import ReactFlow, {
     addEdge,
@@ -17,6 +19,10 @@ import { useLocation } from 'react-router-dom';
 
 import { useCallback, useState, onMouseEnter } from 'react';
 import { useParams } from 'react-router';
+
+import axios from "axios";
+
+
 
 const onInit = (reactFlowInstance) => console.log('flow loaded:', reactFlowInstance);
 
@@ -105,15 +111,38 @@ const Task_Graph = () => {
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const onConnect = (params) => setEdges((eds) => addEdge(params, eds));
     const onEdgeUpdate = (oldEdge, newConnection) => setEdges((els) => updateEdge(oldEdge, newConnection, els));
+    const [redirect, setRedirect] = useEdgesState(false);
 
     useEffect(() => {
         console.log('effect')
-        console.log(location.state.task_data)
-        console.log(location.state)
-        console.log(edges)
+        // console.log(location.state.task_data)
+        // console.log(location.state)
+        // console.log(edges)
         setNodes(location.state.task_data)
-    }, [])
+    },[])
     
+    const add_edges = () => {
+		// console.log(name)
+		// console.log(description)
+		console.log("sending request")
+
+		axios.post('http://localhost:8000/task/addgraph/', {
+			edges:edges,
+		})
+			.then(function (response) {
+				const data = response.data;
+				console.log(data);
+
+
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+        
+        setRedirect(true);
+
+
+	}
 
     return (
         <Container h="1000px">
@@ -149,6 +178,8 @@ const Task_Graph = () => {
                 <Controls />
                 <Background color="#aaa" gap={16} />
             </ReactFlow>
+            <Button  onClick={add_edges} colorScheme="teal">Finish Selection</Button>
+            {redirect && (<Navigate to='/admin' replace={true} />)}
         </Container>
 
     )

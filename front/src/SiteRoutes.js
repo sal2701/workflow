@@ -92,7 +92,7 @@ export default function SiteRoutes() {
 
           <Route exact path="/register" element={<Register />}></Route>
 
-          {/* <Route exact path="/task_graph" element={<Task_Graph />}></Route>  */}
+          <Route exact path="/task_graph" element={<Task_Graph />}></Route> 
 
         </Routes>
       </React.Fragment>
