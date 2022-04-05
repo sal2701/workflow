@@ -2,7 +2,7 @@
 import { Flex } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
@@ -12,51 +12,88 @@ import Workflow from "./pages/Workflow";
 import Register from "./pages/Register";
 import Task_Graph from "./components/Task_Graph";
 import { useSelector } from "react-redux";
+import Unauthorised from "./components/Unauthorised";
+import Homepage from "./components/Homepage";
 
 export default function SiteRoutes() {
+
+  const RequireAuth = ( { children, redirectTo, adminOnly } ) => {
+    const auth = useSelector((state) => state.auth);
+
+    if( adminOnly) {
+      return auth.account.is_superuser ? children : <Unauthorised />
+    }
+    if( !adminOnly ) {
+      return auth.account ? children : <Navigate to={redirectTo} />
+    }
+  }
 
   return (
     <Router>
       <React.Fragment>
         <Routes>
           
-          <Route exact path="/" element={<Workflow />}></Route>
+          <Route exact path="/" element={<Homepage />}></Route>
 
           <Route 
             path="/workflow"
             element={
-              <RequireAuth redirectTo="/login">
+              <RequireAuth redirectTo="/login" adminOnly={true}>
                 <Workflow />
               </RequireAuth>
             }
           > 
           </Route>
 
-          <Route exact path="/dashboard" element={<Dashboard />}></Route>
+          <Route 
+            path="/task"
+            element={
+              <RequireAuth redirectTo="/login" adminOnly={true}>
+                <Task />
+              </RequireAuth>
+            }
+          > 
+          </Route>
+
+          <Route 
+            path="/admin"
+            element={
+              <RequireAuth redirectTo="/login" adminOnly={true}>
+                <Admin />
+              </RequireAuth>
+            }
+          > 
+          </Route>
+
+          <Route 
+            path="/dashboard"
+            element={
+              <RequireAuth redirectTo="/login" adminOnly={false}>
+                <Dashboard />
+              </RequireAuth>
+            }
+          > 
+          </Route>
+
+
+
+          {/* <Route exact path="/dashboard" element={<Dashboard />}></Route> */}
 
           <Route exact path="/task" element={<Task />}></Route>
 
-          <Route exact path="/admin" element={<Admin />}></Route>
+          {/* <Route exact path="/admin" element={<Admin />}></Route> */}
 
           <Route exact path="/login" element={<Login />}></Route>
 
           <Route exact path="/register" element={<Register />}></Route>
 
-          <Route exact path="/task_graph" element={<Task_Graph />}></Route> 
+          {/* <Route exact path="/task_graph" element={<Task_Graph />}></Route>  */}
 
         </Routes>
       </React.Fragment>
     </Router>
   );
 }
-
-
-const RequireAuth = ( { children, redirectTo } ) => {
-  const auth = useSelector((state) => state.auth);
-  console.log(auth)
-  return auth.account ? children : children
-}
-
 
 export const LoadingPage = props => {
   return (

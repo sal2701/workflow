@@ -11,8 +11,6 @@ import authSlice from "../store/slices/auth";
 
 
 const Login = () => {
-	// const [username, setUsername] = useState("")
-	// const [password, setPassword] = useState("")
 
 	const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,7 +29,7 @@ const Login = () => {
 				);
 				dispatch(authSlice.actions.setAccount(res.data.user));
 				setLoading(false);
-				navigate("/");
+				navigate("/dashboard");
 			})
 			.catch((err) => {
 				console.log(err)
@@ -47,8 +45,6 @@ const Login = () => {
     onSubmit: (values) => {
       setLoading(true);
       handleLogin(values.email, values.password);
-			console.log("Pressed")
-			alert("lmao")
     },
     validationSchema: Yup.object({
       email: Yup.string().trim().required("Enter Email"),

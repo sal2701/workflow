@@ -2,8 +2,13 @@
 import { Stack, Spacer, Heading, Text, Input, Button, Box, HStack, VStack } from "@chakra-ui/react";
 import Container from "../components/Container";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const Dashboard = () => {
+
+  const auth = useSelector((state) => state.auth)
+  // console.log("auth dashboard")
+  // console.log(auth)
 
 	return (
 		<>

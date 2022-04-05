@@ -70,8 +70,8 @@ const Workflow = () => {
 	const axios = require('axios')
 
 	const auth = useSelector((state) => state.auth)
-	console.log('auth')
-	console.log(auth)
+	// console.log('auth')
+	// console.log(auth)
 
 	const initialize_workflow = () => {
 		// console.log(name)
