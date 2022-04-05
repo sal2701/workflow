@@ -11,48 +11,47 @@ import {
     DrawerContent,
     DrawerCloseButton,
     DrawerBody,
-    Link as ChakraLink
+    Link as ChakraLink,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
 } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import { SunIcon, MoonIcon, HamburgerIcon } from '@chakra-ui/icons';
 // import { useMediaQuery } from 'react-responsive';
 import React from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import authSlice from '../store/slices/auth';
+import { connect } from 'react-redux';
 
 const LINKS = [
     {
         href: '/workflow',
-        key: 1,
+        key: "101",
         text: 'workflow'
     },
     {
         href: '/dashboard',
-        key: 2,
+        key: "102",
         text: 'dashboard'
     },
     {
-        href: '/task',
-        key: 3,
-        text: 'task'
-    },
-    {
         href: '/admin',
-        key: 4,
+        key: "103",
         text: 'admin'
     },
     {
         href: '/login',
-        key: 5,
+        key: "105",
         text: 'login'
     },
     {
         href: '/register',
-        key: 6,
+        key: "106",
         text: 'register'
-    },
-    {
-        href: '/task_graph',
-        key: 7,
-        text: 'task_graph'
     }
 ];
 
@@ -65,19 +64,77 @@ backdrop-filter: saturate(180%) blur(20px);
 transition: background-color 0.1 ease-in-out;
 `;
 
-const Navbar = () => {
+const Navbar = (props) => {
     const { colorMode, toggleColorMode } = useColorMode();
     // const bg = useColorModeValue(navBgColor.light, navBgColor.dark);
     const isBigScreen = true;
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    // const [auth, setAuth] = useState(null)
 
-    const getLink = ({ href, key, text }) => (
-        <ChakraLink key={key} href={href} style={{ textDecoration: 'none' }}>
-            <Button as="a" variant="ghost" p={[6, 4]} fontSize={['xl', 'lg']}>
+    const auth = useSelector((state) => state.auth)
+    // console.log("auth navbar")
+    // console.log(auth)
+
+    const handleLogout = () => {
+        // console.log(auth)
+        dispatch(authSlice.actions.logout());
+        navigate("/login");
+    };
+
+    const getLink = ({ href, key, text }) => {
+        
+        const truncateAddress = (address) => {
+            return address.length>10 ? address.slice(0, 10) + "..." + address.slice(-4): address;
+        };
+        if( auth.account ){
+            if(text == 'login')
+                return <Menu>
+                <MenuButton
+                    as={Button}
+                    display={{ base: 'none', md: 'inline-flex' }}
+                    fontSize={'sm'}
+                    fontWeight={600}
+                    color={'white'}
+                    bg={'pink.400'}
+                    href={'#'}
+                    _hover={{
+                        bg: 'pink.300',
+                    }}
+                >
+                    {truncateAddress(auth.account.email)}
+                </MenuButton>
+                <MenuList>
+                    <MenuItem
+                        as={ChakraLink}                            
+                        href={"/workflow/"}
+                        isExternal
+                        key={key}
+                        // color={primaryTextColor[colorMode]}
+                    >
+                        Profile
+                    </MenuItem>
+                    <MenuItem 
+                        onClick={handleLogout}
+                        key={key + "10"}
+                        // color={primaryTextColor[colorMode]}
+                    >
+                        Logout
+                    </MenuItem>
+                </MenuList>
+            </Menu>
+            {/* </ChakraLink> */}
+            if(text == 'register')
+                return
+        }
+        
+        return <ChakraLink key={key} href={href} style={{ textDecoration: 'none' }}>
+            <Button variant="ghost" p={[6, 4]} fontSize={['xl', 'lg']}>
                 {text}
             </Button>
         </ChakraLink>
-    );
+    };
 
     return (
         <NavContainer
@@ -144,4 +201,4 @@ const Navbar = () => {
     );
 };
 
-export default Navbar;
+export default (Navbar);

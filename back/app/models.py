@@ -112,7 +112,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.is_superuser
 
     def has_module_perms(self, app_label):
-        print(self.is_superuser)
+        # print(self.is_superuser)
         return self.is_superuser
     
     @property

@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['email', 'is_active']
+        fields = ['email', 'is_active', 'is_superuser']
         read_only_field = ['is_active']
         
 class LoginSerializer(TokenObtainPairSerializer):
