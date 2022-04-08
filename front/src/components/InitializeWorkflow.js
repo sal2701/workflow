@@ -1,5 +1,5 @@
 import { Stack, Spacer, Heading, Text, Input, Button, Select, HStack, Checkbox } from "@chakra-ui/react";
-import Container from "../components/Container";
+import Container from "./Container";
 import {
   Modal,
   ModalOverlay,
@@ -16,6 +16,7 @@ import axios from "axios";
 function BasicUsage(created, workflow_data) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [workflow_id, setWorkflowId] = useState("1")
+
   const handleWorkflowChange = (event) => {
     setWorkflowId(event.target.value)
   }
@@ -23,7 +24,8 @@ function BasicUsage(created, workflow_data) {
     <Select placeholder='Select option' onChange={handleWorkflowChange}> {
       data.map((x) =>
         <option value={x["pk"]}>{x["fields"]["workflow_name"]}</option>)
-    }</Select >;
+    }
+    </Select>;
   const initialize_workflow = () => {
     console.log("sending request")
     axios.post('http://localhost:8000/workflow/initialize/', {
@@ -31,7 +33,7 @@ function BasicUsage(created, workflow_data) {
     })
       .then(function (response) {
         const data = JSON.parse(response.data)
-        console.log(data);initialize_workflowinitialize_workflow
+        console.log(data);
       })
       .catch(function (error) {
         console.log(error);
@@ -52,7 +54,6 @@ function BasicUsage(created, workflow_data) {
           <ModalCloseButton />
           <ModalBody>
             <Stack pb={3}>
-              <Input variant='outline' placeholder='Role' value={role} onChange={(e) => setRole(e.target.value)} />
               {Answer(workflow_data)}
               <Button colorScheme="teal" onClick={initialize_workflow}>Start</Button>
             </Stack>

@@ -8,7 +8,7 @@ import AddRole from "../components/add_role";
 import AddUserRole from "../components/add_user_role";
 import AddTaskRole from "../components/add_task_role";
 import DeleteWorkflow from "../components/delete_workflow";
-
+import InitializeWorkflow from "../components/InitializeWorkflow";
 
 
 import axios from "axios";
