@@ -98,6 +98,7 @@ class Admin extends React.Component {
 						<DeleteWorkflow created={this.state.created} workflow_data={this.state.workflow_data}/>
 						<Button onClick={this.routeChange}>Add Workflow</Button>
 						{this.state.redirect && (<Navigate to="/workflow" replace={true} />)}
+						<InitializeWorkflow created={this.state.created} workflow_data={this.state.workflow_data} />
 					</Stack>
 				</Container>
 			</>
