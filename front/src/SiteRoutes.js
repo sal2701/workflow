@@ -53,7 +53,7 @@ export default function SiteRoutes() {
           <Route 
             path="/task"
             element={
-              <RequireAuth redirectTo="/login" adminOnly={true}>
+              <RequireAuth redirectTo="/login" adminOnly={false}>
                 <Task />
               </RequireAuth>
             }

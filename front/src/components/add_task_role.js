@@ -42,17 +42,27 @@ function BasicUsage(created, workflow_data, role_data, task_data) {
         setRole(roles);
     }
 
-    const roleOptions = role_data.map((x) => {
-        return {
-            value: x["pk"],
-            label: x["fields"]["role"]
+    var roleOptions = role_data.map((x) => {
+        console.log(x["fields"]["workflow_id"] == workflow_id)
+        if(workflow_id == x["fields"]["workflow_id"]) {
+            console.log('andhar')
+            return { 
+                value: x["pk"],
+                label: x["fields"]["role"]
+            }
         }
+        return {}
     }
     );
+
+    roleOptions = roleOptions.filter( (val) => {
+        return Object.keys(val).length > 1
+    })
+
     const TaskOption = (data) =>
         <ChakraSelect placeholder='Select option' onChange={handleTaskChange}>{
             data.map((x) =>
-                <option value={x["pk"]}>{x["fields"]["task_name"]}</option>)
+                (workflow_id == x["fields"]["workflow_id"] && x["fields"]["task_name"]!="ROOT" && x["fields"]["task_name"]!="LEAF") ? <option value={x["pk"]}>{x["fields"]["task_name"]}</option> : null)
         }</ChakraSelect>;
 
     const WorkflowOption = (data) =>
@@ -96,7 +106,7 @@ function BasicUsage(created, workflow_data, role_data, task_data) {
                             {WorkflowOption(workflow_data)}
                             {TaskOption(task_data)}
                             <Select placeholder='Select option' options={roleOptions} onChange={handleRoleChange} isMulti={true} />
-                            <Button colorScheme="teal" onClick={create_task_role}>Create Role</Button>
+                            <Button colorScheme="teal" onClick={create_task_role}>Create Task Role</Button>
                         </Stack>
                     </ModalBody>
                 </ModalContent>

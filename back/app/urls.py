@@ -1,7 +1,7 @@
 from typing import List
 from django.contrib import admin
 from django.urls import path, include
-from .views import AddGraph, CreateRole, DeleteWorkflow, GetTasks, ListUserRole, ListWorkflow, ListTask, LoginViewSet, RefreshViewSet, RegistrationViewSet, UpdateWorkflow, ViewUsers, ListTaskRole
+from .views import AddGraph, CreateRole, DeleteWorkflow, GetTasks, GetTasksforUser, GoToTask, InitializeWorkflow, ListUserRole, ListWorkflow, ListTask, LoginViewSet, RefreshViewSet, RegistrationViewSet, TaskComplete, UpdateWorkflow, ViewUsers, ListTaskRole
 
 urlpatterns = [
     path('workflow/', ListWorkflow.as_view()),
@@ -15,5 +15,9 @@ urlpatterns = [
     path('task-role/create/', ListTaskRole.as_view()),
     path('workflow/delete/', DeleteWorkflow.as_view()),
     path('task/gettasks/', GetTasks.as_view()),
-    path('task/addgraph/', AddGraph.as_view())
+    path('task/addgraph/', AddGraph.as_view()),
+    path('user/tasks/', GetTasksforUser.as_view()),
+    path('workflow/initialize/', InitializeWorkflow.as_view()),
+    path('task_instance/status/progress/', GoToTask.as_view()),
+    path('task_instance/status/complete/', TaskComplete.as_view()),
 ]
