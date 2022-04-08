@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render
 from django.db import models
 from django.utils import timezone
@@ -57,11 +58,23 @@ class DeleteWorkflow(APIView):
 
 class ListTask(APIView):
     
-    def get(self, request):
+    def get_task(self, pk):
+        try:
+            return Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk=None):
+        print("task_id", pk)
+        if pk:
+            task = self.get_task(pk)
+            data = serializers.serialize('json', [task])
+            print("data",data )
+            return Response(data)
         workflows = Task.objects.all()
         data = serializers.serialize('json', workflows)
         return Response(data)
-    
+
     def post(self,request):
         data = request.data
         wf_instance = Workflow.objects.get(pk=data["wf_id"])

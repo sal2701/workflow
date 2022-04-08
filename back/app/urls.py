@@ -7,6 +7,7 @@ urlpatterns = [
     path('workflow/', ListWorkflow.as_view()),
     path('workflow/update/', UpdateWorkflow.as_view()),
     path('task/', ListTask.as_view()),
+    path('task/<int:pk>/', ListTask.as_view()),
     path('api/', include(('app.routers', 'app'), namespace='core-api')),
     path('role/create/', CreateRole.as_view()),
     path('users/', ViewUsers.as_view()),
