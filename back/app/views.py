@@ -5,7 +5,6 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from django.contrib.auth.models import AbstractBaseUser
 from django.core.exceptions import ValidationError
-# from django.utils.translation import ugettext as _
 import re
 import os, binascii, hashlib
 from .models import Workflow, Task, UserManager, User, Role, Task_Role, Task_Instance, User_Role, Workflow_Instance, Workflow_Instance_Current_Task
@@ -19,8 +18,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.core import serializers
 from .serializers import UserSerializer, LoginSerializer, RegisterSerializer
-import json
-# Create your views here.
+import json 
 
 manager = UserManager()
 
@@ -260,6 +258,8 @@ class AddGraph(APIView):
         suc_list = dict()
         pred_list = dict()
         visited = dict()
+        roots = []
+        leaves = []
         for edge in data['edges']:
             if not edge['source'] in suc_list:
                 suc_list[edge['source']] = []
@@ -279,9 +279,30 @@ class AddGraph(APIView):
                 visited[edge['target']] = 0
             
             pred_list[edge['target']].append(edge['source'])
+        
         for i in pred_list:
-            if len(pred_list[i])==0:
+            if len(pred_list[i]) == 0:
+                roots.append(i)
                 self.dfs(suc_list, i, visited)
+        
+        for i in suc_list:
+            if len(suc_list[i]) == 0:
+                leaves.append(i)
+        
+        json_str = json.dumps(roots)
+        wf_instance = Workflow.objects.get(pk=data["workflow_id"])
+        root_task = Task(task_id=0, workflow_id=wf_instance, task_name="ROOT", successor=json_str)
+        root_task.save()
+        
+        for i in roots:
+            pred_list[i].append(root_task.pk)
+            
+        json_str = json.dumps(leaves)
+        leaf_task = Task(task_id=0, workflow_id=wf_instance, task_name="LEAF", predecessor=json_str)
+        leaf_task.save()
+        
+        for i in leaves:
+            suc_list[i].append(leaf_task.pk)
 
         if(self.valid == 0):
             return Response("Invalid")
@@ -298,7 +319,6 @@ class AddGraph(APIView):
             obj.save()    
         return Response(data)   
 
-    
 class ListWorkflowInstanceCurrentTask(APIView):
     
     def get(self, request):
@@ -333,3 +353,107 @@ class ListTaskInstance(APIView):
         obj.save()
         data = serializers.serialize('json', [obj])
         return Response(data)
+
+class InitializeWorkflow(APIView):
+    def post(self, request):
+        data = request.data
+        email_id = data["email_id"]
+        user_id = User.objects.get(email = email_id)
+        wf_obj = Workflow.objects.get(pk=data["workflow_id"])
+        root_node_obj = Task.objects.get(workflow_id = wf_obj, task_name = "ROOT")
+        wf_instance = Workflow_Instance(workflow_id = wf_obj, user_id = user_id, root_node_id = root_node_obj, total_tasks = wf_obj.num_of_task + 2, completed_tasks = 1)
+        wf_instance.save()
+        
+        task_list = Task.objects.filter(workflow_id = wf_obj)
+        root_instance = 0
+        for task in task_list:
+            if task.task_name == "ROOT":
+                task_instance = Task_Instance(wef_instance_id = wf_instance, user_id = user_id, task_id = task, workflow_id = wf_obj, status = "CO", predecessor_count = 0)
+                task_instance.save()
+                root_instance = task_instance
+            else:
+                pred_list = json.loads(task.predecessor)
+                task_instance = Task_Instance(wef_instance_id = wf_instance, task_id = task, workflow_id = wf_obj, status = "NA", predecessor_count = len(pred_list))
+                task_instance.save()                 
+                
+        for nxt_task in json.loads(root_instance.successor):
+            nxt_task_obj = Task_Instance.objects.get(wef_instance_id = wf_instance, task_id = nxt_task)
+            nxt_task_obj.status = "AA"
+            nxt_task_obj.predecessor_count = 0
+            nxt_task_obj.save()
+            workflow_instance_current_task_obj = Workflow_Instance_Current_Task(workflow_instance_id = wf_instance, current_task_id = nxt_task_obj, workflow_id = wf_obj)
+            workflow_instance_current_task_obj.save()
+            
+        return Response("Success")
+            
+class GetTasksforUser(APIView):
+    def post(self,request):
+        data = request.data
+        user_obj = User.objects.get(email = data["email_id"])
+        user_role_list = User_Role.objects.filter(user_id = user_obj.pk)
+        
+        tasks_to_show = {}
+        
+        for user_roles in user_role_list:
+            role_id = user_roles.role_id
+            role_obj = Role.objects.get(pk=role_id)
+            role_task_list = Task_Role.filter(role_id = role_obj)
+            for role_task in role_task_list:
+                task_id= role_task.task_id
+                workflow_id = role_task.workflow_id
+                task_obj = Task.objects.get(pk=task_id)
+                workflow_obj = Workflow.objects.get(pk=workflow_id)
+                task_instances_list = Task_Instance.objects.filter(task_id = task_obj,workflow_id=workflow_obj)
+                for task_instance in task_instances_list:
+                    if task_instance.status == "AA":
+                        if (workflow_obj.workflow_name,workflow_id) not in tasks_to_show:
+                            tasks_to_show[((workflow_obj.workflow_name,workflow_id))] = []    
+                        tasks_to_show[((workflow_obj.workflow_name,workflow_id))] = task_obj
+         
+        data = serializers.serialize('json',tasks_to_show)
+        return Response(data)
+    
+class GoToTask(APIView):
+    
+    def post(self, request):
+        data = request.data
+        workflow_instance_obj = Workflow_Instance.objects.get(pk=data["workflow_instance_id"])
+        workflow_obj = Workflow.objects.get(pk=workflow_instance_obj.workflow_id)
+        task_obj = Task.objects.get(workflow_id=workflow_obj, task_id=data["task_id"])
+        task_instance_obj = Task_Instance(wef_instance_id = workflow_instance_obj, task_id = task_obj)    
+        if(task_instance_obj.status == "IP"):
+            return Response("Already Inprogress")
+        else:
+            task_instance_obj.status = "IP"
+            user_obj = User.objects.get(email = data["email_id"])
+            task_instance_obj.user_id = user_obj
+            task_instance_obj.save()
+            data = serializers.serialize('json', [task_instance_obj])
+            return Response(data)
+
+class TaskComplete(APIView):
+    
+    def post(self, request):
+        data = request.data
+        task_instance_obj = Task_Instance.objects.get(pk=data["task_instance_id"])
+        task_id = task_instance_obj.task_id
+        wef_instance_id = task_instance_obj.wef_instance_id
+        task_obj = Task.objects.get(pk=task_id)
+        succ_list = task_obj.successor
+        workflow_instance_obj = Workflow_Instance.objects.get(pk=wef_instance_id)
+        for task in succ_list:
+            task_succ_obj = Task.objects.get(pk=task)
+            task_instance_succ_obj = Task_Instance.objects.get(task_id = task,wef_instance_id=wef_instance_id)
+            workflow_succ_obj = Workflow.objects.get(pk=task_instance_succ_obj.workflow_id)
+            task_instance_succ_obj.predecessor_count-=1
+            task_instance_succ_obj.save()
+            if task_instance_succ_obj.predecessor_count==0:
+                task_instance_succ_obj.status="AA"
+                task_instance_succ_obj.save()
+                workflow_instance_current_task = Workflow_Instance_Current_Task(workflow_instance_id=workflow_instance_obj,current_task_id=task_succ_obj,workflow_id=workflow_succ_obj)
+                workflow_instance_current_task.save()
+        
+        task_instance_obj.status="CO"
+        task_instance_obj.save()
+        workflow_instance_obj.completed_tasks+=1
+        workflow_instance_obj.save()

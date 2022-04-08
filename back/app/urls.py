@@ -16,5 +16,4 @@ urlpatterns = [
     path('workflow/delete/', DeleteWorkflow.as_view()),
     path('task/gettasks/', GetTasks.as_view()),
     path('task/addgraph/', AddGraph.as_view())
-
 ]
