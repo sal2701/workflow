@@ -136,11 +136,6 @@ class Workflow_Instance(models.Model):
     root_node_id = models.ForeignKey(Task, related_name="workflow_root_task", on_delete=models.CASCADE)
     total_tasks = models.IntegerField(null=False, default=0)
     completed_tasks = models.IntegerField(null=False, default=0)
-    
-class Workflow_Instance_Current_Task(models.Model):
-    workflow_instance_id = models.ForeignKey(Workflow_Instance, related_name="workflow_instance_workflow_instance_current_task", on_delete=models.CASCADE)
-    current_task_id = models.ForeignKey(Task, related_name="current_task_workflow_instance_current_task", on_delete=models.CASCADE)
-    workflow_id = models.ForeignKey(Workflow, related_name="workflow_worrkflow_instance_current_task", on_delete=models.CASCADE)
 
 class Task_Instance(models.Model):
 
@@ -162,3 +157,8 @@ class Task_Instance(models.Model):
     workflow_id = models.ForeignKey(Workflow, related_name="workflow_task_instance", on_delete=models.CASCADE)
     status = models.CharField(max_length=2, choices=STATES)
     predecessor_count = models.IntegerField(null=False, default=0)
+    
+class Workflow_Instance_Current_Task(models.Model):
+    workflow_instance_id = models.ForeignKey(Workflow_Instance, related_name="workflow_instance_workflow_instance_current_task", on_delete=models.CASCADE)
+    current_task_id = models.ForeignKey(Task_Instance, related_name="current_task_workflow_instance_current_task", on_delete=models.CASCADE)
+    workflow_id = models.ForeignKey(Workflow, related_name="workflow_worrkflow_instance_current_task", on_delete=models.CASCADE)
