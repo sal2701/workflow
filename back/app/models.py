@@ -132,16 +132,33 @@ class User_Role(models.Model):
     
 class Workflow_Instance(models.Model):
     workflow_id = models.ForeignKey(Workflow,on_delete=models.CASCADE, related_name = "workflow_instance_workflow")
-    user_id = models.ForeignKey(User,related_name = "workflow_instance_user", on_delete=models.CASCADE)
-
+    user_id = models.ForeignKey(User,related_name = "workflow_instance_user", on_delete=models.CASCADE) #for instantiator
+    root_node_id = models.ForeignKey(Task, related_name="workflow_root_task", on_delete=models.CASCADE)
+    total_tasks = models.IntegerField(null=False, default=0)
+    completed_tasks = models.IntegerField(null=False, default=0)
+    
 class Workflow_Instance_Current_Task(models.Model):
     workflow_instance_id = models.ForeignKey(Workflow_Instance, related_name="workflow_instance_workflow_instance_current_task", on_delete=models.CASCADE)
     current_task_id = models.ForeignKey(Task, related_name="current_task_workflow_instance_current_task", on_delete=models.CASCADE)
     workflow_id = models.ForeignKey(Workflow, related_name="workflow_worrkflow_instance_current_task", on_delete=models.CASCADE)
 
 class Task_Instance(models.Model):
+
+    INACTIVE="NA"
+    ACTIVE="AA"
+    INPROGRESS="IP"
+    COMPLETED="CO"
+
+    STATES = [
+        (INACTIVE,"NA"),
+        (ACTIVE,"AA"),
+        (INPROGRESS,"IP"),
+        (COMPLETED,"CO")
+    ]
+
     wef_instance_id = models.ForeignKey(Workflow_Instance, related_name="task_instance_workflow_instance", on_delete=models.CASCADE)
     user_id = models.ForeignKey(User,on_delete = models.CASCADE,related_name = "task_instance_user")
     task_id = models.ForeignKey(Task,on_delete = models.CASCADE,related_name = "task_instance_task")
     workflow_id = models.ForeignKey(Workflow, related_name="workflow_task_instance", on_delete=models.CASCADE)
-    status = models.BooleanField()
+    status = models.CharField(max_length=2, choices=STATES)
+    predecessor_count = models.IntegerField(null=False, default=0)
