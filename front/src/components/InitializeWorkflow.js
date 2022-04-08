@@ -21,17 +21,22 @@ function BasicUsage(created, workflow_data) {
   const handleWorkflowChange = (event) => {
     setWorkflowId(event.target.value)
   }
+
+  const email_id = useSelector((state)=>state.auth.account.email);
+
+
   const Answer = (data) =>
     <Select placeholder='Select option' onChange={handleWorkflowChange}> {
       data.map((x) =>
         <option value={x["pk"]}>{x["fields"]["workflow_name"]}</option>)
     }
     </Select>;
+
   const initialize_workflow = () => {
     console.log("sending request")
     axios.post('http://localhost:8000/workflow/initialize/', {
       wf_id: workflow_id,
-      email_id:useSelector((state)=>state.auth.account.email),
+      email_id:email_id,
     })
       .then(function (response) {
         const data = JSON.parse(response.data)
