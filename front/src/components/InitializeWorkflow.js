@@ -12,6 +12,7 @@ import {
 import { useDisclosure } from '@chakra-ui/react'
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 function BasicUsage(created, workflow_data) {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -29,7 +30,8 @@ function BasicUsage(created, workflow_data) {
   const initialize_workflow = () => {
     console.log("sending request")
     axios.post('http://localhost:8000/workflow/initialize/', {
-      wf_id: workflow_id
+      wf_id: workflow_id,
+      email_id:useSelector((state)=>state.auth.account.email),
     })
       .then(function (response) {
         const data = JSON.parse(response.data)

@@ -128,19 +128,16 @@ const Task_Graph = () => {
 
 		axios.post('http://localhost:8000/task/addgraph/', {
 			edges:edges,
+            workflow_id:location.state.workflow,
 		})
 			.then(function (response) {
 				const data = response.data;
 				console.log(data);
-
-
+                setRedirect(true);
 			})
 			.catch(function (error) {
 				console.log(error);
 			});
-        
-        setRedirect(true);
-
 
 	}
 
