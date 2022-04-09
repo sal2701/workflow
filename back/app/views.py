@@ -233,23 +233,23 @@ class GetTasks(APIView):
         
 class AddGraph(APIView):
     
-    valid = FALSE
+    valid = False
     visited = dict()
     restack = dict()
     
     def dfs(self,adj_list, curr_task):
-        if self.visited[curr_task] == FALSE:
-            self.visited[curr_task] = TRUE
-            self.restack[curr_task] = TRUE            
+        if self.visited[curr_task] == False:
+            self.visited[curr_task] = True
+            self.restack[curr_task] = True            
 
             for nxt_task in adj_list[curr_task]:
-                if self.visited[nxt_task] == FALSE and self.dfs(adj_list, nxt_task) == TRUE:
-                    return TRUE
-                elif self.restack[nxt_task] == TRUE:
-                    return TRUE
+                if self.visited[nxt_task] == False and self.dfs(adj_list, nxt_task) == True:
+                    return True
+                elif self.restack[nxt_task] == True:
+                    return True
         
-        self.restack[curr_task] = FALSE
-        return FALSE        
+        self.restack[curr_task] = False
+        return False
     
     def post(self, request):
         data = request.data
@@ -260,20 +260,22 @@ class AddGraph(APIView):
         task_list = Task.objects.filter(workflow_id=data['workflow_id'])
         
         for task in task_list:
+            print(task.pk)
             pred_list[task.pk] = []
             suc_list[task.pk] = []
-            self.visited[task.pk] = FALSE
-            self.restack[task.pk] = FALSE
+            self.visited[task.pk] = False
+            self.restack[task.pk] = False
             
         for edge in data['edges']:
-            suc_list[edge['source']].append(edge['target'])
-            pred_list[edge['target']].append(edge['source'])
+            suc_list[int(edge['source'])].append(int(edge['target']))
+            pred_list[int(edge['target'])].append(int(edge['source']))
         
         for i in pred_list:
             if len(pred_list[i]) == 0:
                 roots.append(i)
                 self.valid = self.dfs(suc_list, i)
-                if(self.valid == TRUE):
+                if(self.valid == True):
+                    print("Wrong")
                     return Response("Invalid")
         
         for i in suc_list:
