@@ -90,7 +90,7 @@ const Dashboard = () => {
           return <Box maxW='lg' p={4} borderWidth='1px' borderRadius='lg' overflow='hidden'>
             <VStack>
               <Text color='black.500' fontSize='2xl'>{workflow.fields.instance_name}</Text>
-              <Text color='black.500' fontSize='md'>Total Workflow - {workflow.fields.total_tasks}</Text>
+              <Text color='black.500' fontSize='md'>Total Task - {workflow.fields.total_tasks - 2}</Text>
               <Text fontSize='md'>Progress - {workflow.fields.completed_tasks - 1} / {workflow.fields.total_tasks - 2} Done</Text>
               <Text></Text>
             </VStack>
