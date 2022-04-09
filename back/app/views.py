@@ -257,26 +257,16 @@ class AddGraph(APIView):
         pred_list = dict()
         roots = []
         leaves = []
+        task_list = Task.objects.filter(workflow_id=data['workflow_id'])
+        
+        for task in task_list:
+            pred_list[task.pk] = []
+            suc_list[task.pk] = []
+            self.visited[task.pk] = FALSE
+            self.restack[task.pk] = FALSE
+            
         for edge in data['edges']:
-            if not edge['source'] in suc_list:
-                suc_list[edge['source']] = []
-            if not edge['target'] in pred_list:
-                pred_list[edge['target']] = []
-            if not edge['target'] in suc_list:
-                suc_list[edge['target']] = []
-            if not edge['source'] in pred_list:
-                pred_list[edge['source']] = []
-            
-            if not edge['source'] in self.visited:
-                self.visited[edge['source']] = FALSE
-                self.restack[edge['source']] = FALSE
-            
             suc_list[edge['source']].append(edge['target'])
-            
-            if not edge['target'] in self.visited:
-                self.visited[edge['target']] = FALSE
-                self.restack[edge['target']] = FALSE
-            
             pred_list[edge['target']].append(edge['source'])
         
         for i in pred_list:
