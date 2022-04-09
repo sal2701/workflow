@@ -4,6 +4,8 @@ import Container from "../components/Container";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { Navigate } from "react-router-dom";
+
 
 const Task = () => {
     
@@ -12,6 +14,7 @@ const Task = () => {
     const task_instance_id = location.state.task_instance_id
     const task_id = location.state.task_id
 
+    const [redirect, setRedirect] = useState(false)
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [workflow, setWorkflow] = useState("")
@@ -72,6 +75,7 @@ const Task = () => {
             .catch( (e) => {
                 console.log(e)
             })
+            setRedirect(true)
     }
 
 
@@ -86,6 +90,7 @@ const Task = () => {
                 {fetchAction(action)}
                 <Button bg={"teal"} color={"white"} w={"100px"} onClick={finishTask}>Finish Task</Button>
 			</Stack>
+            {redirect && <Navigate to='/dashboard' replace={true}/>}
 		</Container>
 		</>
 	)
