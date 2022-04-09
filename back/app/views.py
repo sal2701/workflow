@@ -348,8 +348,9 @@ class InitializeWorkflow(APIView):
         email_id = data["email_id"]
         user_id = User.objects.get(email = email_id)
         wf_obj = Workflow.objects.get(pk=data["wf_id"])
+        wf_name = data["instance_name"]
         root_node_obj = Task.objects.get(workflow_id = wf_obj, task_name = "ROOT")
-        wf_instance = Workflow_Instance(workflow_id = wf_obj, user_id = user_id, root_node_id = root_node_obj, total_tasks = wf_obj.num_of_task + 2, completed_tasks = 1)
+        wf_instance = Workflow_Instance(instance_name = wf_name, workflow_id = wf_obj, user_id = user_id, root_node_id = root_node_obj, total_tasks = wf_obj.num_of_task + 2, completed_tasks = 1)
         wf_instance.save()
         
         task_list = Task.objects.filter(workflow_id = wf_obj)
@@ -374,7 +375,17 @@ class InitializeWorkflow(APIView):
             workflow_instance_current_task_obj.save()
             
         return Response("Success")
-            
+
+
+class GetWorkflowStatus(APIView):
+    def post(self, request):
+        data = request.data
+        user_obj = User.objects.get(email = data["email_id"])
+        if(user_obj.is_superuser):
+            workflow_instances = Workflow_Instance.objects.filter(user_id = user_obj.pk)
+            data = serializers.serialize('json',workflow_instances)
+            return Response(data)
+        return Response(serializers.serialize('json', []))
 class GetTasksforUser(APIView):
     def post(self,request):
         data = request.data
@@ -447,17 +458,19 @@ class TaskComplete(APIView):
                 task_instance_succ_obj = Task_Instance.objects.get(task_id = task,wef_instance_id=wef_instance_id)
                 workflow_succ_obj = Workflow.objects.get(pk=task_instance_succ_obj.workflow_id.pk)
                 task_instance_succ_obj.predecessor_count-=1
+                task_instance_succ_obj.predecessor_count = max(task_instance_succ_obj.predecessor_count,0)
                 task_instance_succ_obj.save()
-                if task_instance_succ_obj.predecessor_count==0:
-                    task_instance_succ_obj.status="AA"
+                if task_instance_succ_obj.predecessor_count==0 and task_succ_obj.task_name!="LEAF":
+                    task_instance_succ_obj.status="AA" 
                     task_instance_succ_obj.save()
                     workflow_instance_current_task = Workflow_Instance_Current_Task(workflow_instance_id=workflow_instance_obj,current_task_id=task_instance_succ_obj,workflow_id=workflow_succ_obj)
                     workflow_instance_current_task.save()
             
             task_instance_obj.status="CO"
             task_instance_obj.save()
-            wf_instance_current_task_id = Workflow_Instance_Current_Task.objects.get(pk=data["task_instance_id"])
-            Workflow_Instance_Current_Task.objects.delete(pk=wf_instance_current_task_id)
+            wf_instance_current_task_obj = Workflow_Instance_Current_Task.objects.get(current_task_id=data["task_instance_id"])
+            wf_instance_current_task_obj.delete()
+
             workflow_instance_obj.completed_tasks+=1
             workflow_instance_obj.save()
             return Response(serializers.serialize('json', [workflow_instance_obj]))

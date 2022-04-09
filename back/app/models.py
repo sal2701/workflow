@@ -148,13 +148,14 @@ class User_Role(models.Model):
     
 class Workflow_Instance(models.Model):
     workflow_id = models.ForeignKey(Workflow,on_delete=models.CASCADE, related_name = "workflow_instance_workflow")
+    instance_name = models.CharField(null=False, max_length=100, default="workflow_instance")
     user_id = models.ForeignKey(User,related_name = "workflow_instance_user", on_delete=models.CASCADE) #for instantiator
     root_node_id = models.ForeignKey(Task, related_name="workflow_root_task", on_delete=models.CASCADE)
     total_tasks = models.IntegerField(null=False, default=0)
     completed_tasks = models.IntegerField(null=False, default=0)
 
     def __str__(self):
-        return f"Workflow_id:{self.workflow_id}, Total Tasks: {self.total_tasks}"
+        return f"Workflow_name:{self.instance_name} Workflow_id:{self.workflow_id}, Total Tasks: {self.total_tasks}"
 
 class Task_Instance(models.Model):
 

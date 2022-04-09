@@ -61,7 +61,18 @@ const Task = () => {
             })
     }, [])
 
-
+    const finishTask = () => {
+        axios.post("http://127.0.0.1:8000/task_instance/status/complete/", {
+                "task_instance_id": task_instance_id
+            })
+            .then( (response) => {
+                console.log(response.data)
+                console.log("Job Done")
+            })
+            .catch( (e) => {
+                console.log(e)
+            })
+    }
 
 
 	return (
@@ -73,7 +84,7 @@ const Task = () => {
                 <Text fontSize='2xl'>Description</Text>
                 <Text>{description}</Text>
                 {fetchAction(action)}
-                <Button bg={"teal"} color={"white"} w={"100px"}>Finish Task</Button>
+                <Button bg={"teal"} color={"white"} w={"100px"} onClick={finishTask}>Finish Task</Button>
 			</Stack>
 		</Container>
 		</>

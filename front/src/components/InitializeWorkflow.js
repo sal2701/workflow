@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 function BasicUsage(created, workflow_data) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [workflow_id, setWorkflowId] = useState("1")
+  const [instanceName, setInstanceName] = useState("")
 
   const handleWorkflowChange = (event) => {
     setWorkflowId(event.target.value)
@@ -25,18 +26,23 @@ function BasicUsage(created, workflow_data) {
   const email_id = useSelector((state)=>state.auth.account.email);
 
 
-  const Answer = (data) =>
-    <Select placeholder='Select option' onChange={handleWorkflowChange}> {
-      data.map((x) =>
-        <option value={x["pk"]}>{x["fields"]["workflow_name"]}</option>)
-    }
-    </Select>;
+  const Answer = (data) => {
+    return <>
+      <Select placeholder='Select option' onChange={handleWorkflowChange}> {
+        data.map((x) =>
+          <option value={x["pk"]}>{x["fields"]["workflow_name"]}</option>)
+      }
+      </Select>
+      <Input placeholder="Instance Name" value={instanceName} onChange={ (e) => setInstanceName(e.target.value)}></Input>
+    </>
+  }
 
   const initialize_workflow = () => {
     console.log("sending request")
     axios.post('http://localhost:8000/workflow/initialize/', {
       wf_id: workflow_id,
-      email_id:email_id,
+      email_id: email_id,
+      instance_name: instanceName
     })
       .then(function (response) {
         const data = JSON.parse(response.data)
