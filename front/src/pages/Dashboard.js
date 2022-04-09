@@ -62,13 +62,16 @@ const Dashboard = () => {
 		<>
 		<Container>
 			<Heading mb={5}>Pending Tasks</Heading>
-			<Stack>
+			<Stack m={4}>
       {
         pending.map( (task) => {
           return <Box maxW='lg' p={4} borderWidth='1px' borderRadius='lg' overflow='hidden'>
             <VStack>
-              <Text color='black.500' fontSize='2xl'>{task.task_object[0].fields.task_name}</Text>
-              <Text color='black.500' fontSize='md'>{task.workflow_name}</Text>
+              <Text color='black.500' fontWeight="700" fontSize='2xl'>
+                {task.task_object[0].fields.task_name}
+              </Text>
+              <Text color='black.800' fontWeight="600" fontSize='md'>{task.workflow_instance_name}</Text>
+              {/* <Text color='black.800' fontWeight="600" fontSize='md' m={3}>Description</Text> */}
               <Text>{task.task_object[0].fields.description}</Text>
               <Button onClick={() => {
                 var id = task.task_instance_id
@@ -84,14 +87,14 @@ const Dashboard = () => {
       }
       </Stack>
       <Heading mb={5}>Created Workflows</Heading>
-			<Stack>
+			<Stack m={4}>
       {
         CreatedWorkflows.map( (workflow) => {
           return <Box maxW='lg' p={4} borderWidth='1px' borderRadius='lg' overflow='hidden'>
             <VStack>
-              <Text color='black.500' fontSize='2xl'>{workflow.fields.instance_name}</Text>
-              <Text color='black.500' fontSize='md'>Total Task - {workflow.fields.total_tasks - 2}</Text>
-              <Text fontSize='md'>Progress - {workflow.fields.completed_tasks - 1} / {workflow.fields.total_tasks - 2} Done</Text>
+              <Text color='black.500' fontWeight="700" fontSize='2xl'>{workflow.fields.instance_name}</Text>
+              <Text color='black.500' fontWeight="500" fontSize='md'>Total Tasks - {workflow.fields.total_tasks - 2}</Text>
+              <Text fontWeight="400" fontSize='md'>Progress - {workflow.fields.completed_tasks - 1} / {workflow.fields.total_tasks - 2} Done</Text>
               <Text></Text>
             </VStack>
           </Box>

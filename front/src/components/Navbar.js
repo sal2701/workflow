@@ -31,27 +31,32 @@ const LINKS = [
     {
         href: '/workflow',
         key: "101",
-        text: 'workflow'
+        text: 'workflow',
+        admin: true
     },
     {
         href: '/dashboard',
         key: "102",
-        text: 'dashboard'
+        text: 'dashboard',
+        admin: false
     },
     {
         href: '/admin',
         key: "103",
-        text: 'admin'
+        text: 'admin',
+        admin: true
     },
     {
         href: '/login',
         key: "105",
-        text: 'login'
+        text: 'login',
+        admin: false
     },
     {
         href: '/register',
         key: "106",
-        text: 'register'
+        text: 'register',
+        admin: false
     }
 ];
 
@@ -71,24 +76,19 @@ const Navbar = (props) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    // const [auth, setAuth] = useState(null)
-
-    const auth = useSelector((state) => state.auth)
-    // console.log("auth navbar")
-    // console.log(auth)
+    const account = useSelector((state) => state.auth.account)
 
     const handleLogout = () => {
-        // console.log(auth)
         dispatch(authSlice.actions.logout());
         navigate("/login");
     };
 
-    const getLink = ({ href, key, text }) => {
+    const getLink = ({ href, key, text, admin }) => {
         
         const truncateAddress = (address) => {
             return address.length>10 ? address.slice(0, 10) + "..." + address.slice(-4): address;
         };
-        if( auth.account ){
+        if( account ){
             if(text == 'login')
                 return <Menu>
                 <MenuButton
@@ -103,7 +103,7 @@ const Navbar = (props) => {
                         bg: 'pink.300',
                     }}
                 >
-                    {truncateAddress(auth.account.email)}
+                    {truncateAddress(account.email)}
                 </MenuButton>
                 <MenuList>
                     <MenuItem
@@ -127,8 +127,12 @@ const Navbar = (props) => {
             {/* </ChakraLink> */}
             if(text == 'register')
                 return
+            
+            if( account.is_superuser ) {
+                
+            }
         }
-        
+
         return <ChakraLink key={key} href={href} style={{ textDecoration: 'none' }}>
             <Button variant="ghost" p={[6, 4]} fontSize={['xl', 'lg']}>
                 {text}

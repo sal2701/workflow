@@ -409,6 +409,7 @@ class GetTasksforUser(APIView):
                     if task_instance.status == "AA" and (task_instance.wef_instance_id.pk,task_instance.pk) not in visited:
                         json_object = {
                             "workflow_name": workflow_obj.workflow_name,
+                            "workflow_instance_name": task_instance.wef_instance_id.instance_name, 
                             "workflow_instance_id": task_instance.wef_instance_id.pk,
                             "task_object": serializers.serialize('json', [task_obj]),
                             "task_instance_id": task_instance.pk
