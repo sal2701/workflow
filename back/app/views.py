@@ -260,7 +260,6 @@ class AddGraph(APIView):
         task_list = Task.objects.filter(workflow_id=data['workflow_id'])
         
         for task in task_list:
-            print(task.pk)
             pred_list[task.pk] = []
             suc_list[task.pk] = []
             self.visited[task.pk] = False
@@ -378,7 +377,6 @@ class InitializeWorkflow(APIView):
             
         return Response("Success")
 
-
 class GetWorkflowStatus(APIView):
     def post(self, request):
         data = request.data
@@ -388,6 +386,7 @@ class GetWorkflowStatus(APIView):
             data = serializers.serialize('json',workflow_instances)
             return Response(data)
         return Response(serializers.serialize('json', []))
+
 class GetTasksforUser(APIView):
     def post(self,request):
         data = request.data
@@ -432,7 +431,6 @@ class GoToTask(APIView):
             user_obj = User.objects.get(email = data["email_id"])
             task_instance_obj.user_id = user_obj
             task_instance_obj.save()
-            print("Done IP",task_instance_obj.pk)
             data = serializers.serialize('json', [task_instance_obj])
             return Response(data)
         
@@ -457,13 +455,12 @@ class TaskComplete(APIView):
         try:
             for task in json.loads(succ_list):
                 task_succ_obj = Task.objects.get(pk=task)
-                task_instance_succ_obj = Task_Instance.objects.get(task_id = task,wef_instance_id=wef_instance_id)
+                task_instance_succ_obj = Task_Instance.objects.get(task_id = task, wef_instance_id = wef_instance_id)
                 workflow_succ_obj = Workflow.objects.get(pk=task_instance_succ_obj.workflow_id.pk)
                 task_instance_succ_obj.predecessor_count-=1
-                task_instance_succ_obj.predecessor_count = max(task_instance_succ_obj.predecessor_count,0)
                 task_instance_succ_obj.save()
-                if task_instance_succ_obj.predecessor_count==0 and task_succ_obj.task_name!="LEAF":
-                    task_instance_succ_obj.status="AA" 
+                if task_instance_succ_obj.predecessor_count == 0 and task_succ_obj.task_name != "LEAF":
+                    task_instance_succ_obj.status = "AA" 
                     task_instance_succ_obj.save()
                     workflow_instance_current_task = Workflow_Instance_Current_Task(workflow_instance_id=workflow_instance_obj,current_task_id=task_instance_succ_obj,workflow_id=workflow_succ_obj)
                     workflow_instance_current_task.save()

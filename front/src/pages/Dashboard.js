@@ -24,7 +24,6 @@ const Dashboard = () => {
         tasks.map( (task) => {
           task.task_object = JSON.parse(task.task_object)
         })
-        // tasks.task_object = JSON.parse(tasks.task_object)
         setPending(tasks)
         console.log("tasks")
         console.log(tasks)
@@ -35,8 +34,6 @@ const Dashboard = () => {
         console.log("created workflows")
         console.log(workflows)
         setCreatedWorkflows(workflows)
-        // setPending(tasks)
-        // console.log(tasks)
       })
   }, [])
   
@@ -94,7 +91,7 @@ const Dashboard = () => {
             <VStack>
               <Text color='black.500' fontSize='2xl'>{workflow.fields.instance_name}</Text>
               <Text color='black.500' fontSize='md'>Total Workflow - {workflow.fields.total_tasks}</Text>
-              <Text fontSize='md'>Progress - {workflow.fields.completed_tasks} / {workflow.fields.total_tasks} Done</Text>
+              <Text fontSize='md'>Progress - {workflow.fields.completed_tasks - 1} / {workflow.fields.total_tasks - 2} Done</Text>
               <Text></Text>
             </VStack>
           </Box>
