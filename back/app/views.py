@@ -1,3 +1,4 @@
+from pickle import FALSE, TRUE
 from django.http import Http404, HttpResponse, HttpResponseServerError
 from django.shortcuts import render
 from django.db import models
@@ -63,11 +64,9 @@ class ListTask(APIView):
             raise Http404
 
     def get(self, request, pk=None):
-        print("task_id", pk)
         if pk:
             task = self.get_task(pk)
             data = serializers.serialize('json', [task])
-            print("data",data )
             return Response(data)
         workflows = Task.objects.all()
         data = serializers.serialize('json', workflows)
@@ -127,12 +126,9 @@ class LoginViewSet(ModelViewSet, TokenObtainPairView):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        print(serializer)
         try:
-            print("trying")
             serializer.is_valid(raise_exception=True)
         except TokenError as e:
-            print("error raised", e)
             raise InvalidToken(e.args[0])
 
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
@@ -144,7 +140,6 @@ class RegistrationViewSet(ModelViewSet, TokenObtainPairView):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        print(request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         refresh = RefreshToken.for_user(user)
@@ -181,7 +176,6 @@ class ListTaskRole(APIView):
     
     def post(self, request):
         data = request.data
-        print(request.data)
         objs = []
         task_obj = Task.objects.get(pk=data["task"])
         workflow_obj = Workflow.objects.get(pk=data["wf_id"])
@@ -239,25 +233,28 @@ class GetTasks(APIView):
         
 class AddGraph(APIView):
     
-    valid = 1
+    valid = FALSE
+    visited = dict()
+    restack = dict()
     
-    def dfs(self,adj_list, curr_task, visited):
-        if visited[curr_task] == 1:
-            self.valid  = 0
-        else:
-            visited[curr_task] = 1;
-            if not curr_task in adj_list:
-                return
-            for node in adj_list[curr_task]:
-                self.dfs(adj_list, node, visited)
-                if self.valid == 0:
-                    return
+    def dfs(self,adj_list, curr_task):
+        if self.visited[curr_task] == FALSE:
+            self.visited[curr_task] = TRUE
+            self.restack[curr_task] = TRUE            
+
+            for nxt_task in adj_list[curr_task]:
+                if self.visited[nxt_task] == FALSE and self.dfs(adj_list, nxt_task) == TRUE:
+                    return TRUE
+                elif self.restack[nxt_task] == TRUE:
+                    return TRUE
+        
+        self.restack[curr_task] = FALSE
+        return FALSE        
     
     def post(self, request):
         data = request.data
         suc_list = dict()
         pred_list = dict()
-        visited = dict()
         roots = []
         leaves = []
         for edge in data['edges']:
@@ -270,20 +267,24 @@ class AddGraph(APIView):
             if not edge['source'] in pred_list:
                 pred_list[edge['source']] = []
             
-            if not edge['source'] in visited:
-                visited[edge['source']] = 0
+            if not edge['source'] in self.visited:
+                self.visited[edge['source']] = FALSE
+                self.restack[edge['source']] = FALSE
             
             suc_list[edge['source']].append(edge['target'])
             
-            if not edge['target'] in visited:
-                visited[edge['target']] = 0
+            if not edge['target'] in self.visited:
+                self.visited[edge['target']] = FALSE
+                self.restack[edge['target']] = FALSE
             
             pred_list[edge['target']].append(edge['source'])
         
         for i in pred_list:
             if len(pred_list[i]) == 0:
                 roots.append(i)
-                self.dfs(suc_list, i, visited)
+                self.valid = self.dfs(suc_list, i)
+                if(self.valid == TRUE):
+                    return Response("Invalid")
         
         for i in suc_list:
             if len(suc_list[i]) == 0:
@@ -303,9 +304,6 @@ class AddGraph(APIView):
         
         for i in leaves:
             suc_list[i].append(leaf_task.pk)
-
-        # if(self.valid == 0):
-        #     return Response("Invalid")
 
         for key in suc_list:
             obj = Task.objects.get(pk=key)
@@ -394,7 +392,7 @@ class GetTasksforUser(APIView):
         user_role_list = User_Role.objects.filter(user_id = user_obj.pk)
         
         tasks_to_show = []
-        
+        visited = {}
         for user_roles in user_role_list:
             role_id = user_roles.role_id.pk
             role_obj = Role.objects.get(pk=role_id)
@@ -402,44 +400,28 @@ class GetTasksforUser(APIView):
             for role_task in role_task_list:
                 task_id= role_task.task_id.pk
                 workflow_id = role_task.workflow_id.pk
-                print(task_id,workflow_id)
                 task_obj = Task.objects.get(pk=task_id)
                 workflow_obj = Workflow.objects.get(pk=workflow_id)
                 task_instances_list = Task_Instance.objects.filter(task_id = task_obj,workflow_id=workflow_obj)
-                print(task_instances_list)
                 for task_instance in task_instances_list:
-                    if task_instance.status == "AA":
+                    if task_instance.status == "AA" and (task_instance.wef_instance_id.pk,task_instance.pk) not in visited:
                         json_object = {
                             "workflow_name": workflow_obj.workflow_name,
                             "workflow_instance_id": task_instance.wef_instance_id.pk,
                             "task_object": serializers.serialize('json', [task_obj]),
                             "task_instance_id": task_instance.pk
                         }
-                        # if (workflow_obj.workflow_name,workflow_id) not in tasks_to_show:
-                        #     tasks_to_show[((workflow_obj.workflow_name,workflow_id))] = []    
+                        visited[(task_instance.wef_instance_id.pk,task_instance.pk)] = True
                         tasks_to_show.append(json_object)
          
-        print(tasks_to_show)
         data = json.dumps(tasks_to_show)
         return Response(data)
-    
 
-
-    # {
-    #     "workflow_name": 
-    #     "workflow_instance_id":
-    #     "task_object":
-    #     "task_instance_id"
-    # }
 class GoToTask(APIView):
     
     def post(self, request):
         data = request.data
-        # workflow_instance_obj = Workflow_Instance.objects.get(pk=data["workflow_instance_id"])
-        # workflow_obj = Workflow.objects.get(pk=workflow_instance_obj.workflow_id.pk)
-        # task_obj = Task.objects.get(workflow_id=workflow_obj.pk, task_id=data["task_id"])
         task_instance_obj = Task_Instance.objects.get(pk=data["task_instance_id"])
-        # task_instance_obj = Task_Instance(wef_instance_id = workflow_instance_obj, task_id = task_obj, workflow_id=workflow_obj)
         if(task_instance_obj.status == "IP"):
             return Response("Already Inprogress")
         else:
@@ -447,8 +429,17 @@ class GoToTask(APIView):
             user_obj = User.objects.get(email = data["email_id"])
             task_instance_obj.user_id = user_obj
             task_instance_obj.save()
+            print("Done IP",task_instance_obj.pk)
             data = serializers.serialize('json', [task_instance_obj])
             return Response(data)
+        
+class ChangeStatus(APIView):
+    
+    def post(self,request):
+        data = request.data
+        task_instance_obj = Task_Instance.objects.get(pk=data["task_instance_id"])
+        task_instance_obj.status="AA"
+        task_instance_obj.save()
 
 class TaskComplete(APIView):
     
