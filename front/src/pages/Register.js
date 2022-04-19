@@ -7,10 +7,7 @@ import * as Yup from "yup";
 import { Formik, useFormik } from "formik";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
-
 const Register = () => {
-
 	const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -30,10 +27,7 @@ const Register = () => {
       password: Yup.string().trim().required("Enter Password"),
     }),
   });
-
 	const handleRegister = (email, password) => {
-		// console.log(name)
-		// console.log(description)
 		console.log("sending request")
 
 		axios.post('http://localhost:8000/api/auth/register/', {
@@ -48,9 +42,7 @@ const Register = () => {
 			.catch(function (error) {
 				console.log(error);
 			});
-
 	}
-
 	return (
 		<>
 			<Container>
@@ -68,5 +60,4 @@ const Register = () => {
 		</>
 	)
 }
-
 export default Register;

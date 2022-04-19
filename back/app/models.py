@@ -18,10 +18,11 @@ class Workflow(models.Model):
         
 class Role(models.Model):
     role = models.CharField(null=False,max_length=255)   
-    workflow_id = models.ForeignKey(Workflow,on_delete=models.CASCADE, related_name = "role_workflow")
+    # workflow_id = models.ForeignKey(Workflow,on_delete=models.CASCADE, related_name = "role_workflow")
 
     def __str__(self):
         return self.role
+
 class Task(models.Model):
     
     WRITE="WR"
@@ -43,6 +44,7 @@ class Task(models.Model):
 
     def __str__(self):
         return self.task_name
+
 class Task_Role(models.Model):
     task_id = models.ForeignKey(Task, related_name="task_task_role", on_delete=models.CASCADE)
     role_id = models.ForeignKey(Role, related_name="role_task_role", on_delete=models.CASCADE)
@@ -141,7 +143,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class User_Role(models.Model):
     user_id = models.ForeignKey(User, related_name="user_user_role", on_delete=models.CASCADE)
     role_id = models.ForeignKey(Role, related_name="role_user_role", on_delete=models.CASCADE)
-    workflow_id = models.ForeignKey(Workflow, related_name="workflow_user_role", on_delete=models.CASCADE)
+    # workflow_id = models.ForeignKey(Workflow, related_name="workflow_user_role", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"User_id:{self.user_id}, Role_id:{self.role_id}"
@@ -188,3 +190,10 @@ class Workflow_Instance_Current_Task(models.Model):
 
     def __str__(self):
         return f"Current_task_id:{self.current_task_id}, Workflow_id:{self.workflow_id}"
+    
+class User_Workflow(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name = "user_worklow")
+    workflow_id = models.ForeignKey(Workflow, on_delete = models.CASCADE, related_name = "workflow_user")
+    
+    def __str__(self):
+        return f"User_id:{self.user_id}, Workflow_id:{self.workflow_id}"

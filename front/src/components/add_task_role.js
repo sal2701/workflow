@@ -15,19 +15,11 @@ import { useDisclosure } from '@chakra-ui/react'
 import Select from 'react-select'
 import { useState, useEffect } from "react";
 import axios from "axios";
-
-
-
 function BasicUsage(created, workflow_data, role_data, task_data) {
     const { isOpen, onOpen, onClose } = useDisclosure()
-
     const [roles, setRole] = useState([])
     const [workflow_id, setWorkflowId] = useState("1")
-    // const [workflow_data, setWorkflowData] = useState([])
-    // const [task_data, setTaskData] = useState([])
-    // const [role_data, setRoleData] = useState([])
     const [task, setTask] = useState("")
-
     const handleWorkflowChange = (event) => {
         setWorkflowId(event.target.value)
     }
@@ -43,15 +35,10 @@ function BasicUsage(created, workflow_data, role_data, task_data) {
     }
 
     var roleOptions = role_data.map((x) => {
-        console.log(x["fields"]["workflow_id"] == workflow_id)
-        if(workflow_id == x["fields"]["workflow_id"]) {
-            console.log('andhar')
-            return { 
-                value: x["pk"],
-                label: x["fields"]["role"]
-            }
+        return { 
+            value: x["pk"],
+            label: x["fields"]["role"]
         }
-        return {}
     }
     );
 

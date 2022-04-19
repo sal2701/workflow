@@ -3,16 +3,12 @@ import { Stack, Spacer, Heading, Text, Input, Button } from "@chakra-ui/react";
 import { Navigate } from "react-router-dom";
 import Container from "../components/Container";
 import React, { useEffect, useState } from "react";
-
 import AddRole from "../components/add_role";
 import AddUserRole from "../components/add_user_role";
 import AddTaskRole from "../components/add_task_role";
 import DeleteWorkflow from "../components/delete_workflow";
 import InitializeWorkflow from "../components/InitializeWorkflow";
-
-
 import axios from "axios";
-
 
 class Admin extends React.Component {
 	constructor(props) {
@@ -27,10 +23,6 @@ class Admin extends React.Component {
 		};
 		this.routeChange = this.routeChange.bind(this);
 	}
-
-
-
-
 	componentDidMount() {
 		let self = this;
 		axios.get('http://localhost:8000/workflow/', {
@@ -53,7 +45,6 @@ class Admin extends React.Component {
 			.catch(function (error) {
 				console.log(error);
 			});
-
 		axios.get('http://localhost:8000/task/', {
 		})
 			.then(function (response) {
@@ -64,7 +55,6 @@ class Admin extends React.Component {
 			.catch(function (error) {
 				console.log(error);
 			});
-
 		axios.get('http://localhost:8000/users/', {
 		})
 			.then(function (response) {
@@ -75,16 +65,10 @@ class Admin extends React.Component {
 			.catch(function (error) {
 				console.log(error);
 			});
-
-
 	}
-
 	routeChange() {
-		// console.log("called")
 		this.setState({ redirect: true })
 	}
-
-
 	render() {
 		return (
 			<>
@@ -98,7 +82,7 @@ class Admin extends React.Component {
 						<DeleteWorkflow created={this.state.created} workflow_data={this.state.workflow_data}/>
 						<Button onClick={this.routeChange}>Add Workflow</Button>
 						{this.state.redirect && (<Navigate to="/workflow" replace={true} />)}
-						<InitializeWorkflow created={this.state.created} workflow_data={this.state.workflow_data} />
+						{/* <InitializeWorkflow created={this.state.created} workflow_data={this.state.workflow_data} /> */}
 					</Stack>
 				</Container>
 			</>

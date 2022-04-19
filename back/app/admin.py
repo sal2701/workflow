@@ -14,5 +14,5 @@ admin.site.register(User_Role)
 admin.site.register(Workflow_Instance)
 admin.site.register(Workflow_Instance_Current_Task)
 admin.site.register(Task_Instance)
-
+admin.site.register(User_Workflow)
 # admin.site.register(User, UserAdmin)

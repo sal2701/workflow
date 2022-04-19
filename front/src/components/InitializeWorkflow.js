@@ -25,6 +25,8 @@ function BasicUsage(created, workflow_data) {
 
   const email_id = useSelector((state)=>state.auth.account.email);
 
+  console.log(workflow_data)
+
 
   const Answer = (data) => {
     return <>
@@ -45,7 +47,7 @@ function BasicUsage(created, workflow_data) {
       instance_name: instanceName
     })
       .then(function (response) {
-        const data = JSON.parse(response.data)
+        const data = response.data;
         console.log(data);
       })
       .catch(function (error) {

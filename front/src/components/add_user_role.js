@@ -16,21 +16,16 @@ import Select from 'react-select'
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-
-
 function BasicUsage(created, workflow_data, role_data, user_data) {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const [roles, setRole] = useState([])
-    const [workflow_id, setWorkflowId] = useState("1")
-    // const [workflow_data, setWorkflowData] = useState([])
-    // const [user_data, setUserData] = useState([])
-    // const [role_data, setRoleData] = useState([])
+    // const [workflow_id, setWorkflowId] = useState("1")
     const [user, setUser] = useState("")
 
-    const handleWorkflowChange = (event) => {
-        setWorkflowId(event.target.value)
-    }
+    // const handleWorkflowChange = (event) => {
+    //     setWorkflowId(event.target.value)
+    // }
     const handleUserChange = (event) => {
         setUser(event.target.value)
     }
@@ -43,15 +38,10 @@ function BasicUsage(created, workflow_data, role_data, user_data) {
     }
 
     var roleOptions = role_data.map((x) => {
-        console.log(x["fields"]["workflow_id"] == workflow_id)
-        if(workflow_id == x["fields"]["workflow_id"]) {
-            console.log('andhar')
-            return { 
-                value: x["pk"],
-                label: x["fields"]["role"]
-            }
+        return { 
+            value: x["pk"],
+            label: x["fields"]["role"]
         }
-        return {}
     }
     );
 
@@ -64,14 +54,6 @@ function BasicUsage(created, workflow_data, role_data, user_data) {
             data.map((x) =>
                 <option value={x["pk"]}>{x["fields"]["email"]}</option>)
         }</ChakraSelect>;
-
-    const WorkflowOption = (data) =>
-        <ChakraSelect placeholder='Select option' onChange={handleWorkflowChange}>{
-            data.map((x) =>
-                <option value={x["pk"]}>{x["fields"]["workflow_name"]}</option>)
-        }</ChakraSelect>;
-
-
     const create_user_role = () => {
         console.log("sending request");
 
@@ -79,7 +61,7 @@ function BasicUsage(created, workflow_data, role_data, user_data) {
         axios.post('http://localhost:8000/user-role/create/', {
             role: roles,
             user: user,
-            wf_id: workflow_id
+            // wf_id: workflow_id
         })
             .then(function (response) {
                 const data = JSON.parse(response.data)
@@ -103,7 +85,7 @@ function BasicUsage(created, workflow_data, role_data, user_data) {
                     <ModalCloseButton />
                     <ModalBody>
                         <Stack pb={3}>
-                            {WorkflowOption(workflow_data)}
+                            {/* {WorkflowOption(workflow_data)} */}
                             {UserOption(user_data)}
                             <Select placeholder='Select option' options={roleOptions} onChange={handleRoleChange} isMulti={true} />
                             <Button colorScheme="teal" onClick={create_user_role}>Create Role</Button>

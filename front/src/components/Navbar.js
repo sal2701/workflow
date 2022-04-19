@@ -19,7 +19,6 @@ import {
 } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import { SunIcon, MoonIcon, HamburgerIcon } from '@chakra-ui/icons';
-// import { useMediaQuery } from 'react-responsive';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -47,6 +46,12 @@ const LINKS = [
         admin: true
     },
     {
+        href: '/initialize',
+        key: "107",
+        text: 'Initialize Workflow',
+        admin: false
+    },
+    {
         href: '/login',
         key: "105",
         text: 'login',
@@ -57,7 +62,7 @@ const LINKS = [
         key: "106",
         text: 'register',
         admin: false
-    }
+    },
 ];
 
 
@@ -71,20 +76,16 @@ transition: background-color 0.1 ease-in-out;
 
 const Navbar = (props) => {
     const { colorMode, toggleColorMode } = useColorMode();
-    // const bg = useColorModeValue(navBgColor.light, navBgColor.dark);
     const isBigScreen = true;
     const { isOpen, onOpen, onClose } = useDisclosure();
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const account = useSelector((state) => state.auth.account)
-
     const handleLogout = () => {
         dispatch(authSlice.actions.logout());
         navigate("/login");
     };
-
     const getLink = ({ href, key, text, admin }) => {
-        
         const truncateAddress = (address) => {
             return address.length>10 ? address.slice(0, 10) + "..." + address.slice(-4): address;
         };
@@ -111,14 +112,12 @@ const Navbar = (props) => {
                         href={"/workflow/"}
                         isExternal
                         key={key}
-                        // color={primaryTextColor[colorMode]}
                     >
                         Profile
                     </MenuItem>
                     <MenuItem 
                         onClick={handleLogout}
                         key={key + "10"}
-                        // color={primaryTextColor[colorMode]}
                     >
                         Logout
                     </MenuItem>
@@ -148,14 +147,12 @@ const Navbar = (props) => {
             alignItems="center"
             maxWidth="1000px"
             width="100%"
-            // bg={bg}
             as="nav"
             p={8}
             mt={[0, 8]}
             mb={8}
             mx="auto"
         >
-
             {isBigScreen && (
                 <IconButton
                     borderRadius='10px'

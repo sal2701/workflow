@@ -1,3 +1,4 @@
+import email
 from pickle import FALSE, TRUE
 from django.http import Http404, HttpResponse, HttpResponseServerError
 from django.shortcuts import render
@@ -8,7 +9,7 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.core.exceptions import ValidationError
 import re
 import os, binascii, hashlib
-from .models import Workflow, Task, UserManager, User, Role, Task_Role, Task_Instance, User_Role, Workflow_Instance, Workflow_Instance_Current_Task
+from .models import User_Workflow, Workflow, Task, UserManager, User, Role, Task_Role, Task_Instance, User_Role, Workflow_Instance, Workflow_Instance_Current_Task
 from rest_framework import viewsets, filters, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -19,6 +20,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.core import serializers
 from .serializers import UserSerializer, LoginSerializer, RegisterSerializer
+from distutils.command.upload import upload
+from django.shortcuts import render
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.core.files import File
+from django.core.files.base import ContentFile
 import json 
 
 manager = UserManager()
@@ -89,8 +96,8 @@ class CreateRole(APIView):
     
     def post(self,request):
         data = request.data
-        wf_instance = Workflow.objects.get(pk=data["wf_id"])
-        obj = Role(role=data["role"],workflow_id=wf_instance)
+        # wf_instance = Workflow.objects.get(pk=data["wf_id"])
+        obj = Role(role=data["role"])
         obj.save()
         data = serializers.serialize('json', [obj])
         return Response(data)
@@ -168,6 +175,7 @@ class RefreshViewSet(viewsets.ViewSet, TokenRefreshView):
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
     
 class ListTaskRole(APIView):
+    valid = 0
     
     def get(self, request):
         task_role = Task_Role.objects.all()      
@@ -179,8 +187,26 @@ class ListTaskRole(APIView):
         objs = []
         task_obj = Task.objects.get(pk=data["task"])
         workflow_obj = Workflow.objects.get(pk=data["wf_id"])
+        
+        predessor = task_obj.predecessor
+        predessor = json.loads(predessor)
+        for task in predessor:
+            prev_task_obj = Task.objects.get(pk = task)
+            if prev_task_obj.task_name == "ROOT":
+                self.valid = 1
+            
         for i in data["role"]:
             role_obj = Role.objects.get(pk=i)
+            
+            if self.valid == 1:
+                users_role_list = User_Role.objects.filter(role_id = role_obj)
+                for user_role in users_role_list:
+                    # user = User.objects.get(pk=user_role.user_id)
+                    check_user = User_Workflow.objects.filter(user_id = user_role.user_id, workflow_id = workflow_obj)
+                    if len(check_user) == 0:
+                        user_workflow_obj = User_Workflow(user_id = user_role.user_id, workflow_id = workflow_obj)
+                        user_workflow_obj.save()
+            
             obj = Task_Role(task_id=task_obj, role_id=role_obj, workflow_id=workflow_obj)
             obj.save()
             objs.append(obj)
@@ -198,12 +224,27 @@ class ListUserRole(APIView):
         data = request.data
         objs = []
         user_obj = User.objects.get(pk=data["user"])
-        workflow_obj = Workflow.objects.get(pk=data["wf_id"])
+        
         for i in data["role"]:
             role_obj = Role.objects.get(pk=i)
-            obj = User_Role(user_id=user_obj, role_id=role_obj, workflow_id=workflow_obj)
+            task_role_list = Task_Role.objects.filter(role_id = role_obj)
+            for task_role in task_role_list:
+                task_obj = Task.objects.get(pk = task_role.task_id.pk)
+                workflow_obj = Workflow.objects.get(pk = task_obj.workflow_id.pk)
+                predessor = task_obj.predecessor
+                predessor = json.loads(predessor)
+                for task in predessor:
+                    prev_task_obj = Task.objects.get(pk = task)
+                    if prev_task_obj.task_name == "ROOT":
+                        check_user = User_Workflow.objects.filter(user_id = user_obj, workflow_id = workflow_obj)
+                        if len(check_user) == 0:
+                            user_workflow_obj = User_Workflow(user_id = user_obj, workflow_id = workflow_obj)
+                            user_workflow_obj.save()
+                        
+            obj = User_Role(user_id=user_obj, role_id=role_obj)
             obj.save()
             objs.append(obj)
+
         data = serializers.serialize('json', objs)
         return Response(data)
     
@@ -381,11 +422,9 @@ class GetWorkflowStatus(APIView):
     def post(self, request):
         data = request.data
         user_obj = User.objects.get(email = data["email_id"])
-        if(user_obj.is_superuser):
-            workflow_instances = Workflow_Instance.objects.filter(user_id = user_obj.pk)
-            data = serializers.serialize('json',workflow_instances)
-            return Response(data)
-        return Response(serializers.serialize('json', []))
+        workflow_instances = Workflow_Instance.objects.filter(user_id = user_obj.pk)
+        data = serializers.serialize('json',workflow_instances)
+        return Response(data)
 
 class GetTasksforUser(APIView):
     def post(self,request):
@@ -400,9 +439,9 @@ class GetTasksforUser(APIView):
             role_obj = Role.objects.get(pk=role_id)
             role_task_list = Task_Role.objects.filter(role_id = role_obj)
             for role_task in role_task_list:
-                task_id= role_task.task_id.pk
-                workflow_id = role_task.workflow_id.pk
+                task_id = role_task.task_id.pk
                 task_obj = Task.objects.get(pk=task_id)
+                workflow_id = task_obj.workflow_id.pk   
                 workflow_obj = Workflow.objects.get(pk=workflow_id)
                 task_instances_list = Task_Instance.objects.filter(task_id = task_obj,workflow_id=workflow_obj)
                 for task_instance in task_instances_list:
@@ -478,3 +517,43 @@ class TaskComplete(APIView):
         except Exception as e:
             print(e)
             return HttpResponseServerError()
+        
+class UserInitializeWorkflow(APIView):
+    
+    def post(self, request):
+        data = request.data
+        user_obj = User.objects.get(email = data["email_id"])
+        user_workflow_list = User_Workflow.objects.filter(user_id = user_obj)
+        workflow_list = []
+        if user_obj.is_superuser:
+           workflows = Workflow.objects.all()
+           return Response(serializers.serialize('json', workflows)) 
+        else:
+            for workflow in user_workflow_list: 
+                workflow_obj = Workflow.objects.get(pk = workflow.workflow_id.pk)
+                workflow_list.append(workflow_obj)
+            return Response(serializers.serialize('json',workflow_list))
+    
+class UploadFile(APIView):
+    
+    def post(self,request):
+        if 'upload' in request.FILES:
+            myfile = request.FILES['upload']
+            fs = FileSystemStorage()
+            new_path = request.data['task_instance_id']+'/upload.pdf'
+            if fs.exists(new_path):
+                fs.delete(new_path)
+            filename = fs.save(new_path, myfile)
+            uploaded_file_url = fs.url(filename)
+            return Response(uploaded_file_url)
+        elif 'write' in request.data.keys():
+            new_path = str(request.data['task_instance_id'])+'/write.txt'
+            fs = FileSystemStorage()
+            if fs.exists(new_path):
+                fs.delete(new_path)
+            testfile = ContentFile(request.data['write'])
+            filename = fs.save(new_path,testfile)
+            uploaded_file_url = fs.url(filename)
+            testfile.close
+            return Response(uploaded_file_url)
+        return Response("File not Saved")

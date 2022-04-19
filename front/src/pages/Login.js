@@ -8,15 +8,11 @@ import { Formik, useFormik } from "formik";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import authSlice from "../store/slices/auth";
-
-
 const Login = () => {
-
 	const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
 	const handleLogin = (email, password) => {
 		axios
 			.post(`http://127.0.0.1:8000/api/auth/login/`, { email: email, password: password })
@@ -51,7 +47,6 @@ const Login = () => {
       password: Yup.string().trim().required("Enter Password"),
     }),
   });
-
 	return (
 		<>
 			<Container>
@@ -69,5 +64,4 @@ const Login = () => {
 		</>
 	)
 }
-
 export default Login;

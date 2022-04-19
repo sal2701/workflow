@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import Unauthorised from "./components/Unauthorised";
 import Unauthorised2 from "./components/Unauthorised2";
 import Homepage from "./components/Homepage";
+import Initialize from "./pages/Initialize";
 
 export default function SiteRoutes() {
 
@@ -80,7 +81,7 @@ export default function SiteRoutes() {
           > 
           </Route>
 
-
+          <Route exact path="/initialize" element={<Initialize />}></Route>
 
           {/* <Route exact path="/dashboard" element={<Dashboard />}></Route> */}
 

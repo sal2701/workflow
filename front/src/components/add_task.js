@@ -1,7 +1,5 @@
-// import { Flex, Heading, Text } from "@chakra-ui/layout";
 import { Stack, Spacer, Heading, Text, Input, Button, Select, HStack, Checkbox } from "@chakra-ui/react";
 import Container from "../components/Container";
-// import { useEffect, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -15,18 +13,14 @@ import { useDisclosure } from '@chakra-ui/react'
 import { useState } from "react";
 import axios from "axios";
 
-
-
 function BasicUsage(workflow_id, created, count, setCount) {
     const { isOpen, onOpen, onClose } = useDisclosure()
-
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [predecessors, setPredecessors] = useState(0)
     const [successors, setSuccessors] = useState(0)
     const [action, setAction] = useState("WR")
     const [role, setRole] = useState(0)
-
     const handleChange = (event) => {
         setAction(event.target.value)
     }
@@ -47,16 +41,12 @@ function BasicUsage(workflow_id, created, count, setCount) {
 		  .then(function (response) {
 			const data = JSON.parse(response.data)
 			console.log(data);
-
-			
 		  })
 		  .catch(function (error) {
 			console.log(error);
 		});
 		onClose();
-
     }
-
     return (
     <>
       <Button onClick={onOpen} hidden={!created} colorScheme="teal">Add Task</Button>
@@ -83,18 +73,12 @@ function BasicUsage(workflow_id, created, count, setCount) {
     </>
   )
 }
-
 const AddTask = (props) => {
-
 	const axios = require('axios')
-
-	// const [created, setCreated] = useState(false)
-
 	return (
 		<>
 		    {BasicUsage(props.workflow_id, props.created, props.count, props.setCount)}
 		</>
 	)
 }
-
 export default AddTask;

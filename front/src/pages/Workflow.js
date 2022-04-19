@@ -18,14 +18,11 @@ import axios from "axios";
 import AddTask from "../components/add_task";
 import { useSelector } from "react-redux";
 
-
 function BasicUsage() {
 	const { isOpen, onOpen, onClose } = useDisclosure()
-
 	return (
 		<>
 			<Button onClick={onOpen} colorScheme="teal">Add Task</Button>
-
 			<Modal isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
 				<ModalContent>
@@ -53,9 +50,7 @@ function BasicUsage() {
 		</>
 	)
 }
-
 const Workflow = () => {
-
 	const [workflow, setWorkflow] = useState(0)
 	const [name, setName] = useState("")
 	const [description, setDescription] = useState("")
@@ -68,14 +63,8 @@ const Workflow = () => {
 	const [task_data, setTaskData] = useState([])
 	const [redirect, setRedirect] = useState(false)
 	const axios = require('axios')
-
 	const auth = useSelector((state) => state.auth)
-	// console.log('auth')
-	// console.log(auth)
-
 	const initialize_workflow = () => {
-		// console.log(name)
-		// console.log(description)
 		console.log("sending request")
 
 		axios.post('http://localhost:8000/workflow/', {
@@ -98,8 +87,6 @@ const Workflow = () => {
 	}
 
 	const create_workflow = () => {
-		// console.log(name)
-		// console.log(description)
 		console.log("sending request")
 
 		axios.post('http://localhost:8000/workflow/update/', {
@@ -170,5 +157,4 @@ const Workflow = () => {
 		</>
 	)
 }
-
 export default Workflow;
