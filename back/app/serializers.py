@@ -26,7 +26,6 @@ class UserSerializer(serializers.ModelSerializer):
 class LoginSerializer(TokenObtainPairSerializer):
     
     def validate(self, attrs):
-        print("Adgfnisngosngsdingsiodgnsgsdgsdpognsdpng")
         data = super().validate(attrs)
 
         refresh = self.get_token(self.user)

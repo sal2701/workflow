@@ -311,11 +311,13 @@ class AddGraph(APIView):
             pred_list[int(edge['target'])].append(int(edge['source']))
         
         for i in pred_list:
-            if len(pred_list[i]) == 0:
+            if self.visited[i] == False:
                 roots.append(i)
                 self.valid = self.dfs(suc_list, i)
                 if(self.valid == True):
                     print("Wrong")
+                    wf_obj = Workflow.objects.get(pk=data['workflow_id'])
+                    wf_obj.delete()
                     return Response("Invalid")
         
         for i in suc_list:
